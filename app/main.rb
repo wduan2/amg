@@ -5,13 +5,14 @@ require_relative 'utils/db_util'
 
 class Main
   def self.run
-    result = DbUtil.execute('SHOW databases;', [])
-    unless result.nil?
-      result.each do |row|
-        puts(row)
-      end
+    begin
+      result = DbUtil.execute('SHOW tables;', [])
+      puts(result.collect { |row| row.values })
+    rescue Exception => e
+      puts(e)
     end
   end
 end
 
 Main.run
+

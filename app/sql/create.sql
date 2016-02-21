@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS acct (
     username varchar(255) NOT NULL,
     password varchar(255) NOT NULL,
     date_created DATE NOT NULL,
-    PRIMARY KEY (id));
+    date_updated DATE NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS acct_desc (
@@ -12,7 +13,8 @@ CREATE TABLE IF NOT EXISTS acct_desc (
     label VARCHAR(30) NOT NULL,
     link VARCHAR(255),
     date_created DATE NOT NULL,
+    date_updated DATE NOT NULL,
     acct_id INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (acct.id)
+    FOREIGN KEY (acct_id) REFERENCES acct(id) ON DELETE CASCADE
 );
