@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS acct (
     id INT NOT NULL AUTO_INCREMENT,
+    uuid varchar(255) NOT NULL,
     username varchar(255) NOT NULL,
     password varchar(255) NOT NULL,
     date_created DATE NOT NULL,

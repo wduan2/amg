@@ -18,12 +18,12 @@ class MysqlClient
     return @client
   end
 
-  # Close the  mysql client
+  # Close the mysql client
   def self.close
     @client.close if @client
   end
 
-  # Create mysql client instance
+  # Create the mysql client instance
   def self.connect(host, port, database, username, password)
     begin
       puts("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}.")
@@ -34,6 +34,7 @@ class MysqlClient
     end
   end
 
+  # Initialize the database
   def self.init_db(host, port, database, username, password)
     puts("Using database: #{database}")
 
@@ -51,9 +52,9 @@ class MysqlClient
         @initialized = true
       end
     rescue Mysql2::Error => e
-      raise Exception.new("Issue initializing database: #{database}, error: #{e}.")
-    ensure
       self.close
+      raise Exception.new("Issue initializing database: #{database}, error: #{e}.")
     end
+    self.close
   end
 end
