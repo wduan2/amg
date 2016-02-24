@@ -36,13 +36,14 @@ class MysqlClient
 
   # Initialize the database
   def self.init_db(host, port, database, username, password)
-    puts("Using database: #{database}")
+    puts("Using database: #{database}.")
 
     begin
       client = connect(host, port, nil, username, password)
       result = client.query('SHOW databases;').collect { |row| row.values }.flatten
 
       if result.include?(database)
+        puts("Database: #{database} exists, connecting...")
         @initialized = true
       else
         puts("Database: #{database} doesn't exist, creating...")

@@ -13,7 +13,7 @@ class DbUtil
   # Find account information by label
   def self.find(label)
     puts("Looking up account: #{label}")
-    self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label = #{label} ORDER BY acct_desc.date_updated;")
+    self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label = '#{label}' ORDER BY ad.date_updated;")
   end
 
   def self.list_all
