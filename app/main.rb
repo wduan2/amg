@@ -1,25 +1,23 @@
 #!/usr/bin/ruby
 
-require 'mysql2'
+require 'optparse'
 require_relative 'utils/db_util'
 
 class Main
   def self.run
     begin
-      puts('label = ')
-      label = gets.chomp
-      puts('username = ')
-      username = gets.chomp
-      puts('password = ')
-      password = gets.chomp
-      DbUtil.add_new(label, username, password)
+      OptionParser.new do |opts|
+        opts.on('-l', '--list', 'list all') do
+          result = DbUtil.list_all
+          result.each do |row|
+            puts(row)
+          end
+        end
+      end.parse!
 
-      result = DbUtil.list_all
-      result.each do |row|
-        puts(row)
-      end
+      p ARGV
     rescue Exception => e
-      puts("Exception: #{e}")
+      puts(e)
     end
   end
 end
