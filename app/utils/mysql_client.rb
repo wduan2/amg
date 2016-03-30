@@ -1,13 +1,22 @@
 require 'mysql2'
 
-# Util class for creating mysql client instance
+# Util class for creating mysql client instance.
 class MysqlClient
-  # Singleton mysql client instance
+
+  # Singleton mysql client instance.
   @client = nil
-  # Flag to indicate if the database has been initialized
+
+  # Flag to indicate if the database has been initialized.
   @initialized = false
 
-  # Return the mysql client instance
+  # Return the mysql client instance with mysql connection.
+  #
+  # @param host
+  # @param port
+  # @param database
+  # @param username
+  # @param password
+  # @return the initialized mysql client
   def self.open(host = 'localhost', port = '3306', database = 'am', username = 'root', password = '')
     self.close
     unless @initialized
@@ -18,12 +27,18 @@ class MysqlClient
     return @client
   end
 
-  # Close the mysql client
+  # Close the mysql client.
   def self.close
     @client.close if @client
   end
 
-  # Create the mysql client instance
+  # Open a new mysql connection.
+  #
+  # @param host
+  # @param port
+  # @param database
+  # @param username
+  # @param password
   def self.connect(host, port, database, username, password)
     begin
       puts("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}.")
@@ -34,7 +49,13 @@ class MysqlClient
     end
   end
 
-  # Initialize the database
+  # Initialize the mysql client.
+  #
+  # @param host
+  # @param port
+  # @param database
+  # @param username
+  # @param password
   def self.init_db(host, port, database, username, password)
     puts("Using database: #{database}.")
 

@@ -4,18 +4,26 @@ require 'ap'
 require 'optparse'
 require_relative 'utils/db_util'
 
-class Main
+class AcctMg
+  def self.print_result(result)
+    if result.length > 0
+      ap result
+    else
+      puts 'No account found in database.'
+    end
+  end
+
   def self.run
     begin
       OptionParser.new do |opts|
-        opts.on('-l', '--list', 'list all') do
+        opts.on('-l', '--list', 'list all accounts') do
           result = DbUtil.list_all.collect { |row| row }
-          ap result
+          print_result(result)
         end
 
         opts.on('-f', '--find [label]', 'find account') do |label|
-          result = DbUtil.find(label) { |row| row }
-          ap result
+          result = DbUtil.find_acct(label).collect { |row| row }
+          print_result(result)
         end
 
         opts.on('-a', '--add [label],[username],[password]', Array, 'add new account') do |acct_info|
@@ -25,10 +33,9 @@ class Main
 
       p ARGV
     rescue Exception => e
-      puts(e)
+      puts("Exception happened: #{e}")
     end
   end
 end
 
-Main.run
-
+AcctMg.run
