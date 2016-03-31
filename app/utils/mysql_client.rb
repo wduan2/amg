@@ -71,7 +71,12 @@ class MysqlClient
         CommonUtil.log_debug("Database: #{database} doesn't exist, creating...")
         client.query("CREATE database #{database};")
         CommonUtil.log_debug("Initializing database: #{database}")
-        `mysql -u root #{database} < #{Dir.pwd}/sql/create.sql;`
+        `mysql -u root #{database} < #{Dir.home}/Workspace/projects/AcctManagerCLI/app/sql/create.sql;`
+
+        if $?.exitstatus != 0
+          raise Exception.new("Issue executing database creating script")
+        end
+
         @initialized = true
       end
     rescue Mysql2::Error => e
