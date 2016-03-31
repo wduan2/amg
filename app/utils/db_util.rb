@@ -1,5 +1,6 @@
 require 'securerandom'
 require_relative 'mysql_client'
+require_relative 'common_util'
 
 class DbUtil
 
@@ -10,25 +11,37 @@ class DbUtil
   # @param password the password
   def self.add_new(label, username, password)
     puts("Adding new account: #{label}, username: #{username}")
+
     uuid = SecureRandom.hex(12)
     self.execute("INSERT INTO acct (uuid, username, password, date_updated, date_created) VALUES ('#{uuid}', '#{username}', '#{password}', NOW(), NOW());")
     self.execute("INSERT INTO acct_desc (label, date_updated, date_created, acct_id) VALUES ('#{label}', NOW(), NOW(), (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
   end
 
+  # Delete accounts with the given label.
+  #
+  # @param label the account label
+  def self.delete(label)
+    puts("Deleting accounts with label: #{label}")
+
+    self.find(label).each do |acct_desc|
+      self.execute("DELETE FROM acct WHERE id = #{acct_desc['acct_id']}")
+    end
+  end
+
   # List all accounts.
   def self.list_all
     puts('Listing all accounts')
-    self.execute('SELECT * FROM acct_desc ORDER BY date_updated')
+    self.execute('SELECT a.username, a.password, ad.label, ad.link FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated')
   end
 
-  # Look up account information by a given label, if no account found attempt to fuzzy search.
+  # Look up account detail by a given label, if no account found attempt to fuzzy search.
   #
   # @param label the label of the account
   # @return the matched account
   def self.find_acct(label)
     result = find(label)
 
-    if result.to_a.length > 0
+    if result.length > 0
       return result
     else
       fuzzy_result = []
@@ -36,16 +49,19 @@ class DbUtil
     end
   end
 
-  # Look up account information by a given label.
+  # Look up account detail by a given label.
   #
   # @param label the label of the account
   # @return the matched account
   def self.find(label)
-    puts("Looking up account with label: #{label}.")
-    self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
+    puts("Looking up account with label: #{label}")
+    result = self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
+
+    puts("No account with label: #{label} found in database") if result.length == 0
+    return result
   end
 
-  # Look up account information by a given string recursively.
+  # Look up account detail by a given string recursively.
   #
   # @param string the label to look up
   # @param result the array of matched result
@@ -55,12 +71,13 @@ class DbUtil
     puts("No account found with label: #{string}, attempt to fuzzy find...")
 
     if i < 0
+      puts("No account with label: #{string} found in database by fuzzy search") if result.length == 0
       result
     else
-      self.find(string[0..i] << '%').to_a.each do |row|
-        
+      self.find(string[0..i] << '%').each do |acct|
+
         # Filter out duplicate results
-        result.push(row) unless result.find { |i| i['uuid'] == row['uuid'] }
+        result.push(acct) unless result.find { |i| i['uuid'] == acct['uuid'] }
       end
 
       next_i = i - 1
@@ -77,16 +94,16 @@ class DbUtil
 
     unless client.nil?
       begin
-        puts("Executing sql: '#{sql}'.")
+        CommonUtil.log_debug("Executing sql: '#{sql}'")
         # Mysql2 has not support prepare statement yet
         result = client.query(sql)
       rescue Mysql2::Error => e
         MysqlClient.close
-        raise Exception.new("Issue executing sql: '#{sql}', error: #{e}.")
+        raise Exception.new("Issue executing sql: '#{sql}', error: #{e}")
       end
       # TODO: Figure out how does the 'ensure' block work
       MysqlClient.close
-      return result
+      return result.to_a
     end
   end
 end

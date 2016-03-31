@@ -1,4 +1,5 @@
 require 'mysql2'
+require_relative 'common_util'
 
 # Util class for creating mysql client instance.
 class MysqlClient
@@ -41,11 +42,11 @@ class MysqlClient
   # @param password
   def self.connect(host, port, database, username, password)
     begin
-      puts("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}.")
+      CommonUtil.log_debug("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}")
       @client = Mysql2::Client.new(:host => host, :port => port, :database => database, :username => username, :password => password)
     rescue Mysql2::Error => e
       self.close
-      raise Exception.new("Issue establishing mysql client, error: #{e}.")
+      raise Exception.new("Issue establishing mysql client, error: #{e}")
     end
   end
 
@@ -57,25 +58,25 @@ class MysqlClient
   # @param username
   # @param password
   def self.init_db(host, port, database, username, password)
-    puts("Using database: #{database}.")
+    CommonUtil.log_debug("Using database: #{database}")
 
     begin
       client = connect(host, port, nil, username, password)
       result = client.query('SHOW databases;').collect { |row| row.values }.flatten
 
       if result.include?(database)
-        puts("Database: #{database} exists, connecting...")
+        CommonUtil.log_debug("Database: #{database} exists, connecting...")
         @initialized = true
       else
-        puts("Database: #{database} doesn't exist, creating...")
+        CommonUtil.log_debug("Database: #{database} doesn't exist, creating...")
         client.query("CREATE database #{database};")
-        puts("Initializing database: #{database}.")
+        CommonUtil.log_debug("Initializing database: #{database}")
         `mysql -u root #{database} < #{Dir.pwd}/sql/create.sql;`
         @initialized = true
       end
     rescue Mysql2::Error => e
       self.close
-      raise Exception.new("Issue initializing database: #{database}, error: #{e}.")
+      raise Exception.new("Issue initializing database: #{database}, error: #{e}")
     end
     self.close
   end
