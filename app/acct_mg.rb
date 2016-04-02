@@ -34,6 +34,18 @@ class AcctMg
         opts.on('-d', '--delete [label]', 'delete accounts') do |label|
           DbUtil.delete(label)
         end
+
+        opts.on('-u', '--username [label,new_username]', Array, 'update the username') do |update|
+          DbUtil.update_username(update[0], update[1])
+        end
+
+        opts.on('p', '--password [label,new_password]', Array, 'update the password') do |update|
+          DbUtil.update_password(update[0], update[1])
+        end
+
+        opts.on('r', '--relable [label, new_label]', Array, 'relabel the account') do |update|
+          DbUtil.relabel(update[0], update[1])
+        end
       end.parse!
     rescue Exception => e
       puts("Error: #{e}")

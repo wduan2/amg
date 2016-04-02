@@ -10,28 +10,72 @@ class DbUtil
   # @param username the username
   # @param password the password
   def self.add_new(label, username, password)
-    puts("Adding new account: #{label}, username: #{username}")
-
     uuid = SecureRandom.hex(12)
     self.execute("INSERT INTO acct (uuid, username, password, date_updated, date_created) VALUES ('#{uuid}', '#{username}', '#{password}', NOW(), NOW());")
     self.execute("INSERT INTO acct_desc (label, date_updated, date_created, acct_id) VALUES ('#{label}', NOW(), NOW(), (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
+    CommonUtil.log_important("New account: #{label}, username: #{username} added")
+  end
+
+  # Update username of the account.
+
+  # @param label the account label
+  # @param username the new username
+  def self.update_username(label, username)
+    self.update_acct(label, username, 'username')
+    CommonUtil.log_important("Updated username for account with label: #{label}, new username: #{username}")
+  end
+
+  # Update password of the account.
+  #
+  # @param label the account label
+  # @param password the new password
+  def self.update_password(label, password)
+    self.update_acct(label, password, 'password')
+    CommonUtil.log_important("Updated password for account with label: #{label}")
+  end
+
+  # Relabel the account.
+  #
+  # @param label the old label of the account
+  # @param new_label the new label of the account
+  def self.relabel(label, new_label)
+    self.update_acct_desc(label, new_label, 'label')
+    CommonUtil.log_important("Updated account label to #{new_label}")
+  end
+
+  # Update field with new value of acct table.
+  #
+  # @param label the account label
+  # @param new_val the new value
+  # @param field the field to update
+  def self.update_acct(label, new_val, field)
+    uuid = find_and_choose(label, field)
+    self.execute("UPDATE acct SET #{field} = '#{new_val}' WHERE uuid = '#{uuid}';")
+  end
+
+  # Update field with new value of acct_desc table.
+  #
+  # @param label the account label
+  # @param new_label the new account label
+  def self.update_acct_desc(label, new_val, field)
+    uuid = find_and_choose(label, field)
+    self.execute("UPDATE acct_desc SET #{field} = '#{new_val}' WHERE acct_id = (SELECT id FROM acct WHERE uuid = '#{uuid}');")
   end
 
   # Delete accounts with the given label.
   #
   # @param label the account label
   def self.delete(label)
-    puts("Deleting accounts with label: #{label}")
-
-    self.find(label).each do |acct_desc|
-      self.execute("DELETE FROM acct WHERE id = #{acct_desc['acct_id']}")
-    end
+    uuid = find_and_choose(label, nil)
+    self.execute("DELETE FROM acct WHERE uuid = '#{uuid}';")
+    CommonUtil.log_important("Account with label: #{label} deleted")
   end
 
   # List all accounts.
   def self.list_all
-    puts('Listing all accounts')
-    self.execute('SELECT a.username, a.password, ad.label, ad.link FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated')
+    result = self.execute('SELECT a.username, a.password, ad.label, ad.link FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated;')
+    CommonUtil.log_important("Total return accoutns: #{result.length}")
+    return result
   end
 
   # Look up account detail by a given label, if no account found attempt to fuzzy search.
@@ -44,6 +88,7 @@ class DbUtil
     if result.length > 0
       return result
     else
+      puts("No account found with label: #{label}, attempt to fuzzy find...")
       fuzzy_result = []
       return fuzzy_find(label, fuzzy_result, label.length - 1)
     end
@@ -68,8 +113,6 @@ class DbUtil
   # @param i the current index of the string used for fuzzy searching
   # @return the matched account
   def self.fuzzy_find(string, result, i)
-    puts("No account found with label: #{string}, attempt to fuzzy find...")
-
     if i < 0
       puts("No account with label: #{string} found in database by fuzzy search") if result.length == 0
       result
@@ -83,6 +126,35 @@ class DbUtil
       next_i = i - 1
       self.fuzzy_find(string, result, next_i)
     end
+  end
+
+  # Look up accounts by a given label, if multiple accounts found, let the user pick one.
+  #
+  # @param label the account label
+  # @param field the field to update
+  # @return the uuid of the selected account
+  def self.find_and_choose(label, field)
+    select = 0
+    result = self.find_acct(label)
+
+    if result.length > 1
+      puts("More than one matched account with label : #{label} found:")
+
+      pos = 0
+      result.each do |acct|
+        puts("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
+        pos = pos + 1
+      end
+
+      prompt = 'Choose one account'
+      unless field.nil?
+        prompt = prompt + "to update #{field}"
+      end
+      puts(prompt + ':')
+      select = gets.to_i
+    end
+
+    return result[select]['uuid']
   end
 
   # Execute sql statement.
