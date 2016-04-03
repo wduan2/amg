@@ -19,3 +19,14 @@ CREATE TABLE IF NOT EXISTS acct_desc (
     PRIMARY KEY (id),
     FOREIGN KEY (acct_id) REFERENCES acct(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS security_question (
+    id INT NOT NULL AUTO_INCREMENT,
+    qestion VARCHAR(255) NOT NULL,
+    answer VARCHAR(255) NOT NULL,
+    date_created DATE NOT NULL,
+    date_updated DATE NOT NULL,
+    acct_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (acct_id) REFERENCES acct(id) ON DELETE CASCADE
+);

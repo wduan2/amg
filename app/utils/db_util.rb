@@ -17,7 +17,7 @@ class DbUtil
   end
 
   # Update username of the account.
-
+  #
   # @param label the account label
   # @param username the new username
   def self.update_username(label, username)
@@ -73,9 +73,7 @@ class DbUtil
 
   # List all accounts.
   def self.list_all
-    result = self.execute('SELECT a.username, a.password, ad.label, ad.link FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated;')
-    CommonUtil.log_important("Total return accoutns: #{result.length}")
-    return result
+    self.execute('SELECT a.username, a.password, ad.label, ad.link FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated;')
   end
 
   # Look up account detail by a given label, if no account found attempt to fuzzy search.
@@ -164,7 +162,9 @@ class DbUtil
   def self.execute(sql)
     client = MysqlClient.open
 
-    unless client.nil?
+    if client.nil?
+      raise Exception.new('Issue creating mysql connection')
+    else
       begin
         CommonUtil.log_debug("Executing sql: '#{sql}'")
         # Mysql2 has not support prepare statement yet

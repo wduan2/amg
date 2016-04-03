@@ -7,7 +7,10 @@ require_relative 'utils/db_util'
 
 class AcctMg
   def self.print_result(result)
-    ap result if result.length > 0
+    if result.length > 0
+      ap result
+      CommonUtil.log_important("Total return accounts: #{result.length}")
+    end
   end
 
   def self.run
@@ -39,11 +42,11 @@ class AcctMg
           DbUtil.update_username(update[0], update[1])
         end
 
-        opts.on('p', '--password [label,new_password]', Array, 'update the password') do |update|
+        opts.on('-p', '--password [label,new_password]', Array, 'update the password') do |update|
           DbUtil.update_password(update[0], update[1])
         end
 
-        opts.on('r', '--relable [label, new_label]', Array, 'relabel the account') do |update|
+        opts.on('-r', '--relable [label,new_label]', Array, 'relabel the account') do |update|
           DbUtil.relabel(update[0], update[1])
         end
       end.parse!
