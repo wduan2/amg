@@ -34,6 +34,10 @@ class AcctMg
           DbUtil.add_new(acct_info[0], acct_info[1], acct_info[2])
         end
 
+        opts.on('-q', '--question [label,question,answer]', Array, 'add new security question') do |qa_info|
+          DbUtil.add_new_question(qa_info[0], qa_info[1], qa_info[2])
+        end
+
         opts.on('-d', '--delete [label]', 'delete accounts') do |label|
           DbUtil.delete(label)
         end

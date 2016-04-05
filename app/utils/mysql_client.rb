@@ -4,7 +4,9 @@ require_relative 'common_util'
 # Util class for creating mysql client instance.
 class MysqlClient
 
-  REQUIRED_TABLES = %w(acct acct_desc security_question)
+  REQUIRED_TABLES = {:acct => 'acct',
+                     :acct_desc => 'acct_desc',
+                     :security_question => 'security_question'}
 
   # Singleton mysql client instance.
   @client = nil
@@ -72,7 +74,7 @@ class MysqlClient
 
       tables = @client.query('SHOW tables').collect { |row| row.values }.flatten
 
-      if (tables - REQUIRED_TABLES).empty?
+      if (REQUIRED_TABLES.values - tables).empty?
         CommonUtil.log_debug("Tables are up to date for database: #{database}")
         @updated = true
       else

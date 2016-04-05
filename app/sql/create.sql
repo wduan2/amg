@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS acct_desc (
 
 CREATE TABLE IF NOT EXISTS security_question (
     id INT NOT NULL AUTO_INCREMENT,
-    qestion VARCHAR(255) NOT NULL,
+    question VARCHAR(255) NOT NULL,
     answer VARCHAR(255) NOT NULL,
     date_created DATE NOT NULL,
     date_updated DATE NOT NULL,
