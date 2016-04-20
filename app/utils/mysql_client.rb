@@ -79,6 +79,7 @@ class MysqlClient
         @updated = true
       else
         CommonUtil.log_debug("Initializing tables for database: #{database}")
+        # TODO: Relative path
         `mysql -u root #{database} < #{Dir.home}/Workspace/projects/AcctManagerCLI/app/sql/create.sql;`
 
         if $?.exitstatus != 0

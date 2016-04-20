@@ -116,11 +116,7 @@ class DbUtil
   # @param label the label of the account
   # @return the matched account
   def self.exact_find(label)
-    puts("Looking up account with label: #{label}")
-    result = self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
-
-    puts("No account with label: #{label} found in database") if result.length == 0
-    return result
+    return self.execute("SELECT * FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
   end
 
   # Look up account detail by a given string recursively.
