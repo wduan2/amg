@@ -79,8 +79,7 @@ class MysqlClient
         @updated = true
       else
         CommonUtil.log_debug("Initializing tables for database: #{database}")
-        # TODO: Relative path
-        `mysql -u root #{database} < #{Dir.home}/Workspace/projects/AcctManagerCLI/app/sql/create.sql;`
+        `mysql -u root am < #{File.expand_path('../sql/create.sql', __FILE__)};`
 
         if $?.exitstatus != 0
           raise Exception.new('Issue executing database creating script')
