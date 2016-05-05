@@ -8,6 +8,7 @@ require_relative 'utils/db_util'
 class AcctMg
   def self.print_result(result)
     if result.length > 0
+
       ap result
       CommonUtil.log_important("Total return accounts: #{result.length}")
     end
@@ -54,7 +55,8 @@ class AcctMg
           DbUtil.relabel(update[0], update[1])
         end
       end.parse!
-    rescue Exception => e
+    rescue StandardError => e
+      # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
       puts("Error: #{e}")
     end
   end

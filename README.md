@@ -18,6 +18,4 @@ Update password
 am -p label,new_password
 ```
 
-TODO: Set relative path to database creation script
-
 TODO: Convert database creation script to bash script

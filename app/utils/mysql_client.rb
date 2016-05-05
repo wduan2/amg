@@ -62,7 +62,7 @@ class MysqlClient
       @client = Mysql2::Client.new(:host => host, :port => port, :database => database, :username => username, :password => password)
     rescue Mysql2::Error => e
       self.close
-      raise Exception.new("Issue establishing mysql client, error: #{e}")
+      raise StandardError.new("Issue establishing mysql client, error: #{e}")
     end
   end
 
@@ -82,13 +82,13 @@ class MysqlClient
         `mysql -u root am < #{File.expand_path('../sql/create.sql', __FILE__)};`
 
         if $?.exitstatus != 0
-          raise Exception.new('Issue executing database creating script')
+          raise StandardError.new('Issue executing database creating script')
         end
 
         @updated = true
       end
     else
-      raise Exception.new('Unable to execute database creating script. No connection')
+      raise StandardError.new('Unable to execute database creating script. No connection')
     end
   end
 
@@ -117,7 +117,7 @@ class MysqlClient
       end
     rescue Mysql2::Error => e
       self.close
-      raise Exception.new("Issue initializing database: #{database}, error: #{e}")
+      raise StandardError.new("Issue initializing database: #{database}, error: #{e}")
     end
     self.close
   end

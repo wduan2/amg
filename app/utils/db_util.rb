@@ -200,7 +200,7 @@ class DbUtil
     client = MysqlClient.open
 
     if client.nil?
-      raise Exception.new('Issue creating mysql connection')
+      raise StandardError.new('Issue creating mysql connection')
     else
       begin
         CommonUtil.log_debug("Executing sql: '#{sql}'")
@@ -208,9 +208,8 @@ class DbUtil
         result = client.query(sql)
       rescue Mysql2::Error => e
         MysqlClient.close
-        raise Exception.new("Issue executing sql: '#{sql}', error: #{e}")
+        raise StandardError.new("Issue executing sql: '#{sql}', error: #{e}")
       end
-      # TODO: Figure out how does the 'ensure' block work
       MysqlClient.close
       return result.to_a
     end
