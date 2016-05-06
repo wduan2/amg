@@ -8,7 +8,6 @@ require_relative 'utils/db_util'
 class AcctMg
   def self.print_result(result)
     if result.length > 0
-
       ap result
       CommonUtil.log_important("Total return accounts: #{result.length}")
     end

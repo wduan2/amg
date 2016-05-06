@@ -1,6 +1,7 @@
 require 'securerandom'
 require_relative 'mysql_client'
 require_relative 'common_util'
+require_relative 'formatter'
 
 class DbUtil
 
@@ -205,7 +206,7 @@ class DbUtil
       begin
         CommonUtil.log_debug("Executing sql: '#{sql}'")
         # Mysql2 has not support prepare statement yet
-        result = client.query(sql)
+        result = Formatter.format(client.query(sql))
       rescue Mysql2::Error => e
         MysqlClient.close
         raise StandardError.new("Issue executing sql: '#{sql}', error: #{e}")
