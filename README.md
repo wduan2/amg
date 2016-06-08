@@ -1,6 +1,11 @@
 ### Account Manager Command Line Tool
 ##### Provides CRUD function to help manage account
 
+Create alias 'am'
+```
+sh alias.sh
+```
+
 Show help information
 ```
 am -h

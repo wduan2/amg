@@ -12,22 +12,20 @@ class CommonUtil
     puts(msg) if @@debug
   end
 
-  def self.log_important(msg)
+  def self.log_info(msg)
     puts(msg.red)
   end
 
   # Check if the argument is nil or emtpy.
   def self.validate_arg(args)
-    invalid = false
-
     invalid = args.nil?
     
-    if !invalid
+    unless invalid
       # args is an array
       if args.kind_of? Array
         invalid = args.empty?
 
-        if !invalid
+        unless invalid
           args.each do |arg|
             if arg.nil? or arg == ''
               invalid = false

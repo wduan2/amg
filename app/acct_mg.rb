@@ -9,7 +9,7 @@ class AcctMg
   def self.print_result(result)
     if !result.nil? and result.length > 0
       ap result
-      CommonUtil.log_important("Total return accounts: #{result.length}")
+      CommonUtil.log_info("Total return accounts: #{result.length}")
     end
   end
 

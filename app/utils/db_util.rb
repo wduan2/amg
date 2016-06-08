@@ -16,7 +16,7 @@ class DbUtil
                   VALUES ('#{uuid}', '#{username}', '#{password}', NOW(), NOW());")
     self.execute("INSERT INTO #{MysqlClient::REQUIRED_TABLES[:acct_desc]} (label, date_updated, date_created, acct_id)
                   VALUES ('#{label}', NOW(), NOW(), (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
-    CommonUtil.log_important("New account: #{label}, username: #{username} added")
+    CommonUtil.log_info("New account: #{label}, username: #{username} added")
   end
 
   # Add new security question and answer.
@@ -28,7 +28,7 @@ class DbUtil
     id = find_acct_id(label, nil)
     self.execute("INSERT INTO #{MysqlClient::REQUIRED_TABLES[:security_question]} (question, answer, date_created, date_updated, acct_id)
                   VALUES ('#{question}', '#{answer}', NOW(), NOW(), #{id});")
-    CommonUtil.log_important("New security question added for account with label: #{label}")
+    CommonUtil.log_info("New security question added for account with label: #{label}")
   end
 
   # Update username of the account.
@@ -37,7 +37,7 @@ class DbUtil
   # @param new_username the new username
   def self.update_username(label, new_username)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct], 'username', new_username)
-    CommonUtil.log_important("Updated username for account with label: #{label}, new username: #{new_username}")
+    CommonUtil.log_info("Updated username for account with label: #{label}, new username: #{new_username}")
   end
 
   # Update password of the account.
@@ -46,7 +46,7 @@ class DbUtil
   # @param new_password the new password
   def self.update_password(label, new_password)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct], 'password', new_password)
-    CommonUtil.log_important("Updated password for account with label: #{label}")
+    CommonUtil.log_info("Updated password for account with label: #{label}")
   end
 
   # Relabel the account.
@@ -55,7 +55,7 @@ class DbUtil
   # @param new_label the new label of the account
   def self.relabel(label, new_label)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct_desc], 'label', new_label)
-    CommonUtil.log_important("Updated account label to #{new_label}")
+    CommonUtil.log_info("Updated account label to #{new_label}")
   end
 
   # Update field with new value in table.
@@ -79,7 +79,7 @@ class DbUtil
   def self.delete(label)
     uuid = find_uuid(label, nil)
     self.execute("DELETE FROM acct WHERE uuid = '#{uuid}';")
-    CommonUtil.log_important("Account with label: #{label} deleted")
+    CommonUtil.log_info("Account with label: #{label} deleted")
   end
 
   # List all accounts.
