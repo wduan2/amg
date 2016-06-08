@@ -1,6 +1,7 @@
 require 'securerandom'
 require_relative 'mysql_client'
-require_relative 'common_util'
+require_relative 'logger'
+require_relative 'validator'
 require_relative 'formatter'
 
 class DbUtil
@@ -16,7 +17,7 @@ class DbUtil
                   VALUES ('#{uuid}', '#{username}', '#{password}', NOW(), NOW());")
     self.execute("INSERT INTO #{MysqlClient::REQUIRED_TABLES[:acct_desc]} (label, date_updated, date_created, acct_id)
                   VALUES ('#{label}', NOW(), NOW(), (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
-    CommonUtil.log_info("New account: #{label}, username: #{username} added")
+    Logger.info("New account: #{label}, username: #{username} added")
   end
 
   # Add new security question and answer.
@@ -28,7 +29,7 @@ class DbUtil
     id = find_acct_id(label, nil)
     self.execute("INSERT INTO #{MysqlClient::REQUIRED_TABLES[:security_question]} (question, answer, date_created, date_updated, acct_id)
                   VALUES ('#{question}', '#{answer}', NOW(), NOW(), #{id});")
-    CommonUtil.log_info("New security question added for account with label: #{label}")
+    Logger.info("New security question added for account with label: #{label}")
   end
 
   # Update username of the account.
@@ -37,7 +38,7 @@ class DbUtil
   # @param new_username the new username
   def self.update_username(label, new_username)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct], 'username', new_username)
-    CommonUtil.log_info("Updated username for account with label: #{label}, new username: #{new_username}")
+    Logger.info("Updated username for account with label: #{label}, new username: #{new_username}")
   end
 
   # Update password of the account.
@@ -46,7 +47,7 @@ class DbUtil
   # @param new_password the new password
   def self.update_password(label, new_password)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct], 'password', new_password)
-    CommonUtil.log_info("Updated password for account with label: #{label}")
+    Logger.info("Updated password for account with label: #{label}")
   end
 
   # Relabel the account.
@@ -55,7 +56,7 @@ class DbUtil
   # @param new_label the new label of the account
   def self.relabel(label, new_label)
     self.update_table_field(label, MysqlClient::REQUIRED_TABLES[:acct_desc], 'label', new_label)
-    CommonUtil.log_info("Updated account label to #{new_label}")
+    Logger.info("Updated account label to #{new_label}")
   end
 
   # Update field with new value in table.
@@ -79,7 +80,7 @@ class DbUtil
   def self.delete(label)
     uuid = find_uuid(label, nil)
     self.execute("DELETE FROM acct WHERE uuid = '#{uuid}';")
-    CommonUtil.log_info("Account with label: #{label} deleted")
+    Logger.info("Account with label: #{label} deleted")
   end
 
   # List all accounts.
@@ -93,22 +94,22 @@ class DbUtil
   # @param label the label of the account
   # @return the matched account
   def self.find_acct(label)
-    result = exact_find(label)
+    results = exact_find(label)
 
-    if result.length > 0
-      return result
+    if results.length > 0
+      return results
     else
-      puts("No account found with label: #{label}, attempt to fuzzy find...")
-      fuzzy_result = fuzzy_find(label, [], label.length - 1)
+      Logger.info("No account found with label: #{label}, attempt to fuzzy find...")
+      fuzzy_results = fuzzy_find(label, [], label.length - 1)
 
-      if fuzzy_result.length > 1
-        puts("Found similar account with label: #{fuzzy_result[0]['label']}, list all similar results ? (Y/N)")
+      if fuzzy_results.length > 1
+        Logger.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
         if /[nN]/.match(gets.chomp)
-          return fuzzy_result[0..0]
+          return fuzzy_results[0..0]
         end
       end
 
-      return fuzzy_result
+      return fuzzy_results
     end
   end
 
@@ -117,9 +118,10 @@ class DbUtil
   # @param label the label of the account
   # @return the matched account
   def self.exact_find(label)
-    return self.execute("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, 
-      ad.description, ad.link, 
-      sq.question, sq.answer FROM 
+    return self.execute("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated,
+      ad.description, ad.link,
+      sq.question, sq.answer,
+      a.uuid FROM
       acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id 
       WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
   end
@@ -127,22 +129,24 @@ class DbUtil
   # Look up account detail by a given string recursively.
   #
   # @param string the label to look up
-  # @param result the array of matched result
+  # @param results the array of matched result
   # @param i the current index of the string used for fuzzy searching
   # @return the matched account
-  def self.fuzzy_find(string, result, i)
+  def self.fuzzy_find(string, results, i)
     if i < 0
-      puts("No account with label: #{string} found in database by fuzzy search") if result.length == 0
-      result
+      Logger.info("No account with label: #{string} found in database by fuzzy search") if results.length == 0
+      return results
     else
       self.exact_find(string[0..i] << '%').each do |acct|
 
         # Filter out duplicate results
-        result.push(acct) unless result.find { |i| i['uuid'] == acct['uuid'] }
+        unless results.find { |result| result['uuid'] == acct['uuid'] }
+          results.push(acct)
+        end
       end
 
       next_i = i - 1
-      self.fuzzy_find(string, result, next_i)
+      self.fuzzy_find(string, results, next_i)
     end
   end
 
@@ -178,11 +182,11 @@ class DbUtil
     result = self.find_acct(label)
 
     if result.length > 1
-      puts("More than one matched account with label : #{label} found:")
+      Logger.info("More than one matched account with label : #{label} found:")
 
       pos = 0
       result.each do |acct|
-        puts("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
+        Logger.info("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
         pos = pos + 1
       end
 
@@ -190,7 +194,7 @@ class DbUtil
       unless field.nil?
         prompt = prompt + "to update #{field}"
       end
-      puts(prompt + ':')
+      Logger.info(prompt + ':')
       select = gets.to_i
     end
 
@@ -208,7 +212,7 @@ class DbUtil
       raise StandardError.new('Issue creating mysql connection')
     else
       begin
-        CommonUtil.log_debug("Executing sql: '#{sql}'")
+        Logger.debug("Executing sql: '#{sql}'")
         # Mysql2 has not support prepare statement yet
         result = Formatter.format(client.query(sql))
       rescue Mysql2::Error => e

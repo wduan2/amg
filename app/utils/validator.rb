@@ -1,21 +1,7 @@
 require 'colorize'
+require_relative 'logger'
 
-class CommonUtil
-  @@debug = false
-  
-  def self.enable_debug
-    @@debug = true
-    puts('Debug logging enabled')
-  end
-
-  def self.log_debug(msg)
-    puts(msg) if @@debug
-  end
-
-  def self.log_info(msg)
-    puts(msg.red)
-  end
-
+class Validator
   # Check if the argument is nil or emtpy.
   def self.validate_arg(args)
     invalid = args.nil?
@@ -39,7 +25,7 @@ class CommonUtil
     end
 
     if invalid
-      puts('Arguement must not be nil or emtpy'.red)
+      Logger.info('Arguement must not be nil or emtpy')
     end
 
     return !invalid

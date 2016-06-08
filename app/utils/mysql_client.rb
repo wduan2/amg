@@ -1,5 +1,6 @@
 require 'mysql2'
-require_relative 'common_util'
+require_relative 'logger'
+require_relative 'validator'
 
 # Util class for creating mysql client instance.
 class MysqlClient
@@ -58,7 +59,7 @@ class MysqlClient
   # @param password
   def self.connect(host, port, database, username, password)
     begin
-      CommonUtil.log_debug("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}")
+      Logger.debug("Establishing mysql client instance, host: #{host}, port: #{port}, database = #{database}, username: #{username}")
       @client = Mysql2::Client.new(:host => host, :port => port, :database => database, :username => username, :password => password)
     rescue Mysql2::Error => e
       self.close
@@ -75,10 +76,10 @@ class MysqlClient
       tables = @client.query('SHOW tables').collect { |row| row.values }.flatten
 
       if (REQUIRED_TABLES.values - tables).empty?
-        CommonUtil.log_debug("Tables are up to date for database: #{database}")
+        Logger.debug("Tables are up to date for database: #{database}")
         @updated = true
       else
-        CommonUtil.log_debug("Initializing tables for database: #{database}")
+        Logger.debug("Initializing tables for database: #{database}")
         `mysql -u root am < #{File.expand_path('../sql/create.sql', __FILE__)};`
 
         if $?.exitstatus != 0
@@ -100,17 +101,17 @@ class MysqlClient
   # @param username
   # @param password
   def self.init_db(host, port, database, username, password)
-    CommonUtil.log_debug("Using database: #{database}")
+    Logger.debug("Using database: #{database}")
 
     begin
       connect(host, port, nil, username, password)
       result = @client.query('SHOW databases;').collect { |row| row.values }.flatten
 
       if result.include?(database)
-        CommonUtil.log_debug("Database: #{database} exists, connecting...")
+        Logger.debug("Database: #{database} exists, connecting...")
         @initialized = true
       else
-        CommonUtil.log_debug("Database: #{database} doesn't exist, creating...")
+        Logger.debug("Database: #{database} doesn't exist, creating...")
         @client.query("CREATE database #{database};")
 
         @initialized = true
