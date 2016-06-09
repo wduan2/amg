@@ -7,6 +7,10 @@ require_relative 'utils/validator'
 require_relative 'utils/db_util'
 
 class AcctMg
+
+  HELP_FLAG = '--help'
+  DEBUG_FLAG = '--debug'
+
   def self.print_result(result)
     if !result.nil? and result.length > 0
       ap result
@@ -62,18 +66,16 @@ class AcctMg
         end
       end
 
-      args = ARGV
-
-      debug = args.delete('--debug')
-      if debug
-        args.unshift(debug)
+      # Doesn't work correctly for some special characters like '!' or '\' unless they are escaped
+      if ARGV.delete(DEBUG_FLAG)
+        ARGV.unshift(DEBUG_FLAG)
       end
 
-      if args.empty?
-        args.unshift('-h')
+      if ARGV.empty?
+        ARGV.unshift(HELP_FLAG)
       end
 
-      opt_parser.parse!(args)
+      opt_parser.parse!
 
     rescue StandardError => e
       # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
