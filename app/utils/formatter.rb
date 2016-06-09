@@ -5,10 +5,12 @@ class Formatter
   # @param result the sql query result
   # @return the result with formatted date
   def self.format(result)
-    result.each do |row|
-      row.keys.each do |key|
-        format_date(row, key)
-        format_nil(row, key)
+    if result
+      result.each do |row|
+        row.keys.each do |key|
+          format_date(row, key)
+          format_nil(row, key)
+        end
       end
     end
   end

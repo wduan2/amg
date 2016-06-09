@@ -16,10 +16,16 @@ class AcctMg
 
   def self.run
     begin
-      OptionParser.new do |opts|
-        # TODO: Make '--debug' always execute first
-        opts.on_tail('--debug', 'enable debug mode') do
-          Logger.enable_debug
+      opt_parser = OptionParser.new do |opts|
+        opts.banner = 'Usage: am [options]'
+
+        # Boolean switch
+        opts.on('--debug', '--[no-]debug', 'enable debug mode') do |flag|
+          Logger.enable_debug if flag
+        end
+
+        opts.on('-h', '--help', 'help') do
+          Logger.info(opts)
         end
 
         opts.on('-l', '--list', 'list all accounts') do
@@ -54,7 +60,21 @@ class AcctMg
         opts.on('-r', '--relable [label,new_label]', Array, 'relabel the account') do |update|
           DbUtil.relabel(update[0], update[1]) if Validator.validate_arg(update)
         end
-      end.parse!
+      end
+
+      args = ARGV
+
+      debug = args.delete('--debug')
+      if debug
+        args.unshift(debug)
+      end
+
+      if args.empty?
+        args.unshift('-h')
+      end
+
+      opt_parser.parse!(args)
+
     rescue StandardError => e
       # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
       Logger.error("Error: #{e}")
