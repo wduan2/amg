@@ -25,7 +25,7 @@ class Validator
     end
 
     if invalid
-      Logger.info('Arguement must not be nil or emtpy')
+      Logger.info('Argument must not be nil or empty!')
     end
 
     return !invalid

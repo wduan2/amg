@@ -67,6 +67,7 @@ class AcctMg
       end
 
       # Doesn't work correctly for some special characters like '!' or '\' unless they are escaped
+      # Make sure the --debug or --help always get executed at first
       if ARGV.delete(DEBUG_FLAG)
         ARGV.unshift(DEBUG_FLAG)
       end

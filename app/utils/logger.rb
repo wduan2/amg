@@ -1,7 +1,7 @@
 require 'colorize'
 
 class Logger
-  # Global variable
+  # Class variable
   @@debug = false
 
   def self.enable_debug
