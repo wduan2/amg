@@ -2,7 +2,7 @@ require 'colorize'
 require_relative 'logger'
 
 class Validator
-  # Check if the argument is nil or emtpy.
+  # Check if the argument is nil or empty.
   def self.validate_arg(args)
     invalid = args.nil?
     

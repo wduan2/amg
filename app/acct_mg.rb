@@ -61,7 +61,7 @@ class AcctMg
           DbUtil.update_password(update[0], update[1]) if Validator.validate_arg(update)
         end
 
-        opts.on('-r', '--relable [label,new_label]', Array, 'relabel the account') do |update|
+        opts.on('-r', '--relabel [label,new_label]', Array, 'relabel the account') do |update|
           DbUtil.relabel(update[0], update[1]) if Validator.validate_arg(update)
         end
       end

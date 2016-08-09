@@ -160,6 +160,7 @@ class DbUtil
 
     return account['uuid'] unless account.nil?
   end
+  private_class_method :find_uuid
 
   # Look up id of an account by a given label, if multiple accounts found, let the user pick one.
   #
@@ -171,6 +172,7 @@ class DbUtil
 
     return account['id'] unless account.nil?
   end
+  private_class_method :find_acct_id
 
   # Look up accounts by a given label, if multiple accounts found, let the user pick one.
   #
@@ -200,6 +202,7 @@ class DbUtil
 
     return result[select]
   end
+  private_class_method :find_and_choose
 
   # Execute sql statement.
   #
@@ -223,4 +226,5 @@ class DbUtil
       return result.to_a
     end
   end
+  private_class_method :execute
 end

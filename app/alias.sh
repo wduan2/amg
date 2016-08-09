@@ -1,4 +1,4 @@
-#!bin/usr/zsh
+#!/usr/bin/env bash
 
 # Add aliases am="ruby #{pwd}/acct_mg.rb" in ~/.aliases
 AM_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/acct_mg.rb"
@@ -24,10 +24,11 @@ BASH_ALIAS_CMD="if [ -f ~/.aliases ]; then\n . ~/.aliases\nfi"
 
 # TODO: Better grep to check if the command exists
 if ! grep "aliases" "$HOME/.zshrc" ; then
-	echo "No bash alias command found, adding command..."
+	echo "No bash alias command found in .zshrc, adding command..."
 	echo $BASH_ALIAS_CMD >> "$HOME/.zshrc"
 else
-	echo "Command already exists, do nothing!"
+	echo "Command already exists in .zshrc, do nothing!"
 fi
 
 . ~/.zshrc
+# source ~/.bashrc
