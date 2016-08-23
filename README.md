@@ -23,4 +23,4 @@ Update password
 am -p label,new_password
 ```
 
-TODO: Convert database creation script to bash script
+TODO: Create general password for showing real passwords

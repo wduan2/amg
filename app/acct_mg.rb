@@ -19,6 +19,42 @@ class AcctMg
   end
 
   def self.run
+    while true
+      puts 'Possible commands: help, list, add, password, exit'
+
+      # Ruby puts can parse special character without escape character
+
+      # Split string by multiple whitespaces or commas
+      # See also: http://stackoverflow.com/questions/13537920/ruby-split-by-whitespace
+      input = gets.strip.split(/[\s,]+/m)
+
+      # The parser only take two parameters, the operation and the parameters
+      # Multiple parameters are saved in one string and separate by comma
+      if input.include? 'help'
+        ARGV.push('-h')
+        self.cmd_run
+      elsif input.include? 'list'
+        ARGV.push('-l')
+        self.cmd_run
+      elsif input.include? 'add'
+        ARGV.push('-a')
+        ARGV.push(input[1..3].join(','))
+        self.cmd_run
+      elsif input.include? 'password'
+        ARGV.push('-p')
+        ARGV.push(input[1..2].join(','))
+        self.cmd_run
+      elsif input.include? 'exit'
+        break
+      end
+
+      ARGV.clear
+
+    end
+    puts 'Bye'
+  end
+
+  def self.cmd_run
     begin
       opt_parser = OptionParser.new do |opts|
         opts.banner = 'Usage: am [options]'
@@ -40,7 +76,7 @@ class AcctMg
           print_result(DbUtil.find_acct(label)) if Validator.validate_arg(label)
         end
 
-        # Multiple arguments can not be separated by space
+        # Multiple arguments can not be separated by whitespace via STDIN
         opts.on('-a', '--add [label,username,password]', Array, 'add new account') do |acct_info|
           DbUtil.add_new(acct_info[0], acct_info[1], acct_info[2]) if Validator.validate_arg(acct_info)
         end
@@ -66,7 +102,8 @@ class AcctMg
         end
       end
 
-      # Doesn't work correctly for some special characters like '!' or '\' unless they are escaped
+      # STDIN doesn't work correctly for special characters like '!' or '\' unless they are escaped
+
       # Make sure the --debug or --help always get executed at first
       if ARGV.delete(DEBUG_FLAG)
         ARGV.unshift(DEBUG_FLAG)
@@ -85,4 +122,8 @@ class AcctMg
   end
 end
 
-AcctMg.run
+if ARGV.length > 0
+  AcctMg.cmd_run
+else
+  AcctMg.run
+end
