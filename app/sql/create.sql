@@ -30,3 +30,9 @@ CREATE TABLE IF NOT EXISTS security_question (
     PRIMARY KEY (id),
     FOREIGN KEY (acct_id) REFERENCES acct(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS passcode (
+    user VARCHAR(255) NOT NULL,
+    passcode VARCHAR(4) NOT NULL,
+    PRIMARY KEY (user)
+);

@@ -7,7 +7,8 @@ class MysqlClient
 
   REQUIRED_TABLES = {:acct => 'acct',
                      :acct_desc => 'acct_desc',
-                     :security_question => 'security_question'}
+                     :security_question => 'security_question',
+                     :passcode => 'passcode'}
 
   # Singleton mysql client instance.
   @client = nil
@@ -75,12 +76,14 @@ class MysqlClient
 
       tables = @client.query('SHOW tables').collect { |row| row.values }.flatten
 
-      if (REQUIRED_TABLES.values - tables).empty?
+      new_tables = REQUIRED_TABLES.values - tables
+
+      if (new_tables).empty?
         Logger.debug("Tables are up to date for database: #{database}")
         @updated = true
       else
-        Logger.debug("Initializing tables for database: #{database}")
-        `mysql -u root am < #{File.expand_path('../sql/create.sql', __FILE__)};`
+        Logger.debug("Initializing tables: #{new_tables} for database: #{database}")
+        `mysql -u root am < #{File.expand_path('../../sql/create.sql', __FILE__)};`
 
         if $?.exitstatus != 0
           raise StandardError.new('Issue executing database creating script')
