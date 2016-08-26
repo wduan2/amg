@@ -5,6 +5,7 @@ require 'optparse'
 require_relative 'utils/logger'
 require_relative 'utils/validator'
 require_relative 'utils/db_util'
+require_relative 'helpers/auth'
 
 class AcctMg
 
@@ -20,7 +21,7 @@ class AcctMg
 
   def self.run
     while true
-      puts 'Possible commands: help, list, add, password, exit'
+      puts "User: #{Auth.get_user}, Possible commands: help, list, add, password, exit"
 
       # Ruby puts can parse special character without escape character
 

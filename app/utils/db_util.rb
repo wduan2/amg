@@ -4,6 +4,8 @@ require_relative 'logger'
 require_relative 'validator'
 require_relative 'formatter'
 
+# TODO: Move internal used method into crud.rb
+
 class DbUtil
 
   # Add new account.
