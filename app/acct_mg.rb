@@ -4,7 +4,7 @@ require 'ap'
 require 'optparse'
 require_relative 'utils/logger'
 require_relative 'utils/validator'
-require_relative 'utils/db_util'
+require_relative 'helpers/crud'
 require_relative 'helpers/auth'
 
 class AcctMg
@@ -70,36 +70,36 @@ class AcctMg
         end
 
         opts.on('-l', '--list', 'list all accounts') do
-          print_result(DbUtil.list_all)
+          print_result(Crud.list_all)
         end
 
         opts.on('-f', '--find [label]', 'find account') do |label|
-          print_result(DbUtil.find_acct(label)) if Validator.validate_arg(label)
+          print_result(Crud.find_acct(label)) if Validator.validate_arg(label)
         end
 
         # Multiple arguments can not be separated by whitespace via STDIN
         opts.on('-a', '--add [label,username,password]', Array, 'add new account') do |acct_info|
-          DbUtil.add_new(acct_info[0], acct_info[1], acct_info[2]) if Validator.validate_arg(acct_info)
+          Crud.add_new(acct_info[0], acct_info[1], acct_info[2]) if Validator.validate_arg(acct_info)
         end
 
         opts.on('-q', '--question [label,question,answer]', Array, 'add new security question') do |qa_info|
-          DbUtil.add_new_question(qa_info[0], qa_info[1], qa_info[2]) if Validator.validate_arg(qa_info)
+          Crud.add_new_question(qa_info[0], qa_info[1], qa_info[2]) if Validator.validate_arg(qa_info)
         end
 
         opts.on('-d', '--delete [label]', 'delete accounts') do |label|
-          DbUtil.delete(label) if Validator.validate_arg(label)
+          Crud.delete(label) if Validator.validate_arg(label)
         end
 
         opts.on('-u', '--username [label,new_username]', Array, 'update the username') do |update|
-          DbUtil.update_username(update[0], update[1]) if Validator.validate_arg(update)
+          Crud.update_username(update[0], update[1]) if Validator.validate_arg(update)
         end
 
         opts.on('-p', '--password [label,new_password]', Array, 'update the password') do |update|
-          DbUtil.update_password(update[0], update[1]) if Validator.validate_arg(update)
+          Crud.update_password(update[0], update[1]) if Validator.validate_arg(update)
         end
 
         opts.on('-r', '--relabel [label,new_label]', Array, 'relabel the account') do |update|
-          DbUtil.relabel(update[0], update[1]) if Validator.validate_arg(update)
+          Crud.relabel(update[0], update[1]) if Validator.validate_arg(update)
         end
       end
 
