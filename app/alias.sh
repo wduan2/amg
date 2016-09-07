@@ -31,4 +31,12 @@ else
 fi
 
 . ~/.zshrc
-# source ~/.bashrc
+
+if ! grep "aliases" "$HOME/.bashrc" ; then
+	echo "No bash alias command found in .bashrc, adding command..."
+	echo $BASH_ALIAS_CMD >> "$HOME/.bashrc"
+else
+	echo "Command already exists in .bashrc, do nothing!"
+fi
+
+. ~/.bashrc
