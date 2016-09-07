@@ -7,5 +7,5 @@ Gem::Specification.new do |s|
   s.authors     = ['Wenyu Duan']
   s.email       = 'duanwenyu1988@gmail.com'
   s.files       = ['app/']
-  s.homepage    = 'No Home Page'
+  s.homepage    = 'https://github.com/duandf35/AcctManagerCLI'
 end
