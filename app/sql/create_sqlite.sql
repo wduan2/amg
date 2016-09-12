@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS acct (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     uuid varchar(255) NOT NULL,
     username varchar(255) NOT NULL,
     password varchar(255) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS acct (
 );
 
 CREATE TABLE IF NOT EXISTS acct_desc (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     description VARCHAR(255),
     label VARCHAR(30) NOT NULL,
     link VARCHAR(255),
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS acct_desc (
 );
 
 CREATE TABLE IF NOT EXISTS security_question (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     question VARCHAR(255) NOT NULL,
     answer VARCHAR(255) NOT NULL,
     date_created DATE NOT NULL,
@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS security_question (
 );
 
 CREATE TABLE IF NOT EXISTS passcode (
+    id INT NOT NULL,
     sys_user VARCHAR(255) NOT NULL,
     passcode VARCHAR(4) NOT NULL,
     PRIMARY KEY (sys_user)

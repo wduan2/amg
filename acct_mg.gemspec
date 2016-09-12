@@ -11,5 +11,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'awesome_print', '1.6.1', '>= 1.6.0'
   s.add_development_dependency 'colorize', '0.7.7', '>= 0.7.0'
-  s.add_development_dependency 'mysql2', '0.4.2', '>= 0.4.0'
+  # s.add_development_dependency 'mysql2', '0.4.2', '>= 0.4.0'
+  s.add_development_dependency 'sqlite3', '1.3.11', '>=1.3.0'
 end

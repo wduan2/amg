@@ -7,6 +7,9 @@ require_relative 'utils/validator'
 require_relative 'helpers/crud'
 require_relative 'helpers/auth'
 
+# Only for test
+require_relative 'utils/sqlite_client'
+
 class AcctMg
 
   HELP_FLAG = '--help'
@@ -100,6 +103,12 @@ class AcctMg
 
         opts.on('-r', '--relabel [label,new_label]', Array, 'relabel the account') do |update|
           Crud.relabel(update[0], update[1]) if Validator.validate_arg(update)
+        end
+
+        # Only for test
+        opts.on('-t', '--test', 'test sqlite db') do
+          SqliteClient.open
+          SqliteClient.close
         end
       end
 
