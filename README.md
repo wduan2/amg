@@ -3,6 +3,8 @@
 
 **Requirements:**
 
+(Switching to SQLite3 is in progress)
+
 Install MySQL
 
 **Note: The gem has not been completed, so run as gem won't get all the functions** 
