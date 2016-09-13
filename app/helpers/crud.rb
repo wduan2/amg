@@ -1,7 +1,13 @@
-require_relative '../utils/mysql_client'
+require 'securerandom'
 require_relative '../utils/db_util'
+require_relative '../utils/sqlite_db_util'
 
 class Crud
+
+  def self.list_all2
+    SqliteDbUtil.execute('SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, ad.link
+                          FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated;')
+  end
 
   # Add new account.
   #

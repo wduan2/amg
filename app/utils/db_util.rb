@@ -1,9 +1,8 @@
-require 'securerandom'
 require_relative 'mysql_client'
 require_relative 'logger'
-require_relative 'validator'
 require_relative 'formatter'
 
+# Deprecated, use SqliteDbUtil instead
 # Internal used database functions.
 class DbUtil
 

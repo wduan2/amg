@@ -7,19 +7,20 @@ require_relative 'utils/validator'
 require_relative 'helpers/crud'
 require_relative 'helpers/auth'
 
-# Only for test
-require_relative 'utils/sqlite_client'
-
 class AcctMg
 
   HELP_FLAG = '--help'
   DEBUG_FLAG = '--debug'
 
   def self.print_result(result)
+    len = 0
+
     if !result.nil? and result.length > 0
       ap result
-      Logger.info("Total return accounts: #{result.length}")
+      len = result.length
     end
+
+    Logger.info("Total return accounts: #{len}")
   end
 
   def self.run
@@ -105,10 +106,8 @@ class AcctMg
           Crud.relabel(update[0], update[1]) if Validator.validate_arg(update)
         end
 
-        # Only for test
         opts.on('-t', '--test', 'test sqlite db') do
-          SqliteClient.open
-          SqliteClient.close
+          print_result(Crud.list_all2)
         end
       end
 
