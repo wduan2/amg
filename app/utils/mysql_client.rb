@@ -2,6 +2,7 @@ require 'mysql2'
 require_relative 'logger'
 require_relative 'validator'
 
+# Deprecated, use SqliteClient instead
 # Util class for creating mysql client instance.
 class MysqlClient
 

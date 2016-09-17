@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS security_question (
 );
 
 CREATE TABLE IF NOT EXISTS passcode (
-    user VARCHAR(255) NOT NULL,
+    sys_user VARCHAR(255) NOT NULL,
     passcode VARCHAR(4) NOT NULL,
-    PRIMARY KEY (user)
+    PRIMARY KEY (sys_user)
 );

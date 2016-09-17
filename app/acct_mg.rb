@@ -13,10 +13,14 @@ class AcctMg
   DEBUG_FLAG = '--debug'
 
   def self.print_result(result)
+    len = 0
+
     if !result.nil? and result.length > 0
       ap result
-      Logger.info("Total return accounts: #{result.length}")
+      len = result.length
     end
+
+    Logger.info("Total return accounts: #{len}")
   end
 
   def self.run
