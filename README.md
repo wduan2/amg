@@ -3,9 +3,9 @@
 
 **Requirements:**
 
-(Switching to SQLite3 is in progress)
+Install SQLite engine: https://www.sqlite.org/download.html
 
-Install MySQL
+~~Install MySQL~~
 
 **Note: The gem has not been completed, so run as gem won't get all the functions** 
 
@@ -34,6 +34,17 @@ Update password
 ```
 am -p label,new_password
 ```
+
+Dependencies:
+
+ap
+
+colorize
+
+sqlite3
+
+~~mysql2~~
+
 
 TODO: Create general password for showing real passwords
 
