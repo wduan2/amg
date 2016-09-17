@@ -12,11 +12,11 @@ class DbUtil
   # @return the matched account
   def self.exact_find(label)
     return self.execute("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated,
-      ad.description, ad.link,
-      sq.question, sq.answer,
-      a.uuid FROM
-      acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id 
-      WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
+                         ad.description, ad.link,
+                         sq.question, sq.answer,
+                         a.uuid FROM
+                         acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id
+                         WHERE ad.label like '#{label}' ORDER BY ad.date_updated;")
   end
 
   # Look up account detail by a given string recursively.

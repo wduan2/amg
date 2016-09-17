@@ -105,10 +105,6 @@ class AcctMg
         opts.on('-r', '--relabel [label,new_label]', Array, 'relabel the account') do |update|
           Crud.relabel(update[0], update[1]) if Validator.validate_arg(update)
         end
-
-        opts.on('-t', '--test', 'test sqlite db') do
-          print_result(Crud.list_all2)
-        end
       end
 
       # STDIN doesn't work correctly for special characters like '!' or '\' unless they are escaped
