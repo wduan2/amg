@@ -33,30 +33,6 @@ class SqliteDbUtil
               %w(label id username password date_created date_updated description link question answer uuid))
   end
 
-  # Look up account detail by a given string recursively.
-  #
-  # @param string the label to look up
-  # @param results the array of matched result
-  # @param i the current index of the string used for fuzzy searching
-  # @return the matched account
-  def self.fuzzy_find(string, results, i)
-    if i < 0
-      Logger.info("No account with label: #{string} found in database by fuzzy search") if results.length == 0
-      return results
-    else
-      exact_find(string[0..i] << '%').each do |acct|
-
-        # Filter out duplicate results
-        unless results.find { |result| result['uuid'] == acct['uuid'] }
-          results.push(acct)
-        end
-      end
-
-      next_i = i - 1
-      fuzzy_find(string, results, next_i)
-    end
-  end
-
   # Look up uuid of an account by a given label, if multiple accounts found, let the user pick one.
   #
   # @param label the account label
@@ -90,16 +66,19 @@ class SqliteDbUtil
       return results
     else
       Logger.info("No account found with label: #{label}, attempt to fuzzy find...")
-      fuzzy_results = fuzzy_find(label, [], label.length - 1)
+      fuzzy_results = exact_find("%#{label}%")
 
-      if fuzzy_results.length > 1
+      if fuzzy_results.length <= 1
+        return fuzzy_results
+      else
         Logger.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
-        if /[nN]/.match(gets.chomp)
+        decision = gets.chomp
+        if /^[nN]/.match(decision)
           return fuzzy_results[0..0]
+        else
+          return fuzzy_results
         end
       end
-
-      return fuzzy_results
     end
   end
 
