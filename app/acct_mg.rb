@@ -25,7 +25,7 @@ class AcctMg
 
   def self.run
     while true
-      puts "User: #{Auth.get_user}, Possible commands: help, list, add, password, exit"
+      Logger.info("User: #{Auth.get_user}, Possible commands: help, list, add, password, exit")
 
       # Ruby puts can parse special character without escape character
 
