@@ -44,7 +44,7 @@ class Crud
   # @param label the account label
   # @param new_password the new password
   def self.update_password(label, new_password)
-    DbUtil.update_table_field(label, SqliteDbUtil::REQUIRED_TABLES[:acct], 'password', new_password)
+    SqliteDbUtil.update_table_field(label, SqliteDbUtil::REQUIRED_TABLES[:acct], 'password', new_password)
     Logger.info("Updated password for account with label: #{label}")
   end
 
