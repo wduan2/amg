@@ -4,7 +4,7 @@ class ParserHelper
   #
   # output: am -u label,new_name -p label,new_password --debug
   #
-  def self.parse(args)
+  def self.pre_process(args)
     cmd = nil
     cmds_params = {}
 

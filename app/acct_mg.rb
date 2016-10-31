@@ -6,6 +6,7 @@ require_relative 'utils/logger'
 require_relative 'utils/validator'
 require_relative 'helpers/crud'
 require_relative 'helpers/auth'
+require_relative 'helpers/parser_helper'
 
 class AcctMg
 
@@ -118,7 +119,9 @@ class AcctMg
         ARGV.unshift(HELP_FLAG)
       end
 
-      opt_parser.parse!
+      ParserHelper.pre_process(ARGV)
+
+      opt_parser.parse!(ARGV)
 
     rescue StandardError => e
       # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
