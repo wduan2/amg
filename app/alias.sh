@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Deprecated, use setup.sh to create Unix command
+
 # Add aliases am="ruby #{pwd}/acct_mg.rb" in ~/.aliases
 AM_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/acct_mg.rb"
 
