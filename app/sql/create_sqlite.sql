@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS security_question (
 );
 
 CREATE TABLE IF NOT EXISTS passcode (
-    sys_user TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sys_user TEXT UNIQUE NOT NULL,
     passcode TEXT NOT NULL
 );
