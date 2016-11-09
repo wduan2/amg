@@ -1,6 +1,7 @@
 require 'securerandom'
 require_relative '../utils/db_util'
 require_relative '../utils/sqlite_db_util'
+require_relative '../helpers/auth'
 
 class Crud
 
@@ -11,8 +12,8 @@ class Crud
   # @param password the password
   def self.add_new(label, username, password)
     uuid = SecureRandom.hex(12)
-    SqliteDbUtil.do_update("INSERT INTO #{SqliteDbUtil::REQUIRED_TABLES[:acct]} (uuid, username, password, date_updated, date_created)
-                            VALUES ('#{uuid}', '#{username}', '#{password}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);")
+    SqliteDbUtil.do_update("INSERT INTO #{SqliteDbUtil::REQUIRED_TABLES[:acct]} (uuid, username, password, date_updated, date_created, sys_user)
+                            VALUES ('#{uuid}', '#{username}', '#{password}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '#{Auth.get_user}');")
     SqliteDbUtil.do_update("INSERT INTO #{SqliteDbUtil::REQUIRED_TABLES[:acct_desc]} (label, date_updated, date_created, acct_id)
                             VALUES ('#{label}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
     Logger.info("New account: #{label}, username: #{username} added")
