@@ -1,18 +1,16 @@
 require 'colorize'
 
 class Logger
-  # Class variable
-  @@debug = false
 
   def self.enable_debug
-    @@debug = true
+    @debug = true
     debug('Debug logging enabled')
   end
 
   # Ensure passing string type into 'puts' by wrapping 'msg' into a string
 
   def self.debug(msg)
-    puts("#{msg}".green) if @@debug
+    puts("#{msg}".green) if @debug
   end
 
   def self.warn(msg)
