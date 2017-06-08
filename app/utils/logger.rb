@@ -10,18 +10,18 @@ class Logger
   # Ensure passing string type into 'puts' by wrapping 'msg' into a string
 
   def self.debug(msg)
-    puts("#{msg}".green) if @debug
+    puts msg.to_s.green if @debug
   end
 
   def self.warn(msg)
-    puts("#{msg}".light_white.on_red)
+    puts msg.to_s.light_white.on_red
   end
 
   def self.info(msg)
-    puts("#{msg}".yellow)
+    puts msg.to_s.yellow
   end
 
   def self.error(msg)
-    puts("#{msg}".red)
+    puts msg.to_s.red
   end
 end

@@ -1,5 +1,5 @@
 class Formatter
-  
+
   # Format the result.
   #
   # @param result the sql query result
@@ -20,9 +20,9 @@ class Formatter
   # @param hash the sql query result
   # @param key the key
   def self.format_date(hash, key)
-  	if hash[key].kind_of? Date
-  		hash[key] = hash[key].strftime('%Y-%m-%d')
-  	end
+    if hash[key].is_a? Date
+      hash[key] = hash[key].strftime('%Y-%m-%d')
+    end
   end
 
   # Format nil value.
@@ -30,9 +30,9 @@ class Formatter
   # @param hash the sql query result
   # @param key the key
   def self.format_nil(hash, key)
-  	if hash[key].nil?
-  		hash[key] = 'N/A'
-  	end
+    if hash[key].nil?
+      hash[key] = 'N/A'
+    end
   end
 
   private_class_method :format_date, :format_nil

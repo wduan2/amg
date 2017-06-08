@@ -4,8 +4,8 @@ require_relative 'validator'
 
 class SqliteClient
 
-  DB_NAME = "#{File.expand_path('../../data/am.db', __FILE__)}"
-  DB_CREATE_SQL = "#{File.expand_path('../../sql/create_sqlite.sql', __FILE__)}"
+  DB_NAME = File.expand_path('../../data/am.db', __FILE__).to_s.freeze
+  DB_CREATE_SQL = File.expand_path('../../sql/create_sqlite.sql', __FILE__).to_s.freeze
 
   # Singleton sqlite client instance.
   @client = nil
@@ -13,7 +13,7 @@ class SqliteClient
   # Return the sqlite client instance with database connection.
   #
   # @return the initialized sqlite client
-  def self.open
+  def open
     Logger.debug("Initializing SQLite database: #{DB_NAME}.")
 
     # Update the table. TODO: any API to do this ?
@@ -23,11 +23,8 @@ class SqliteClient
   end
 
   # Close the database connection.
-  def self.close
-    unless @client.nil? and @client.closed?
-      Logger.debug("Closing SQLite database: #{DB_NAME}.")
-
-      @client.close
-    end
+  def close
+    @client.close unless @client.nil? && @client.closed?
+    Logger.debug("Closing SQLite database: #{DB_NAME}.")
   end
 end
