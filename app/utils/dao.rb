@@ -47,7 +47,7 @@ class Dao
   def find_uuid(label, field)
     account = find_and_choose(label, field)
 
-    return account['uuid'] unless account.nil?
+    return account['uuid'], account['label'] unless account.nil?
   end
 
   # Look up id of an account by a given label, if multiple accounts found, let the user pick one.
@@ -79,8 +79,6 @@ class Dao
 
     decision = gets.chomp
     return fuzzy_results[0..0] if decision =~ /^[nN]/
-
-    return fuzzy_results
   end
 
   # Look up accounts by a given label, if multiple accounts found, let the user pick one.
@@ -89,7 +87,6 @@ class Dao
   # @param field the field to update
   # @return the uuid of the selected account
   def find_and_choose(label, field)
-    select = 0
     result = find_acct(label)
 
     if result.length > 1
@@ -106,9 +103,10 @@ class Dao
 
       Logger.info(prompt + ':')
       select = gets.to_i
+      return result[select]
     end
 
-    return result[select]
+    return result[0]
   end
 
   # Update field with new value in table.
@@ -118,11 +116,18 @@ class Dao
   # @param field the field to update
   # @param new_val the new value
   def update_table_field(label, table, field, new_val)
-    uuid = find_uuid(label, field)
+    uuid, found_label = find_uuid(label, field)
+
+    if uuid.nil?
+      Logger.info("Account #{label} not found!")
+      return false
+    end
 
     find_acct_query = table == REQUIRED_TABLES[:acct] ? "uuid = '#{uuid}'" : "acct_id = (SELECT id FROM acct WHERE uuid = '#{uuid}')"
 
     do_update("UPDATE #{table} SET #{field} = '#{new_val}', date_updated = CURRENT_TIMESTAMP WHERE #{find_acct_query};")
+
+    Logger.info("Update #{field} to #{new_val} for account #{found_label}")
   end
 
   # Execute sql statement.

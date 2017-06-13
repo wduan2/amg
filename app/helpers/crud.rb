@@ -40,7 +40,6 @@ class Crud
   # @param new_username the new username
   def update_username(label, new_username)
     @dao.update_table_field(label, Dao::REQUIRED_TABLES[:acct], 'username', new_username)
-    Logger.info("Updated username for account with label: #{label}, new username: #{new_username}")
   end
 
   # Update password of the account.
@@ -49,7 +48,6 @@ class Crud
   # @param new_password the new password
   def update_password(label, new_password)
     @dao.update_table_field(label, Dao::REQUIRED_TABLES[:acct], 'password', new_password)
-    Logger.info("Updated password for account with label: #{label}")
   end
 
   # Relabel the account.
@@ -58,16 +56,15 @@ class Crud
   # @param new_label the new label of the account
   def relabel(label, new_label)
     @dao.update_table_field(label, Dao::REQUIRED_TABLES[:acct_desc], 'label', new_label)
-    Logger.info("Updated account label to #{new_label}")
   end
 
   # Delete accounts with the given label.
   #
   # @param label the account label
   def delete(label)
-    uuid = @dao.find_uuid(label, nil)
+    uuid, found_label = @dao.find_uuid(label, nil)
     @dao.do_update("DELETE FROM acct WHERE uuid = '#{uuid}';")
-    Logger.info("Account with label: #{label} deleted")
+    Logger.info("Account with label: #{found_label} deleted")
   end
 
   # List all accounts.
