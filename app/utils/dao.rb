@@ -1,19 +1,17 @@
 require 'securerandom'
-require_relative 'sqlite_client'
+require_relative 'client'
 require_relative 'logger'
 require_relative 'formatter'
 require_relative '../helpers/auth'
 
-class Dao
+module Dao
 
   REQUIRED_TABLES = { acct: 'acct',
                       acct_desc: 'acct_desc',
                       security_question: 'security_question',
                       passcode: 'passcode' }.freeze
 
-  def initialize
-    @client = SqliteClient.new
-  end
+  module_function
 
   # List all accounts.
   #
@@ -120,7 +118,7 @@ class Dao
 
     if uuid.nil?
       Logger.info("Account #{label} not found!")
-      return false
+      return
     end
 
     find_acct_query = table == REQUIRED_TABLES[:acct] ? "uuid = '#{uuid}'" : "acct_id = (SELECT id FROM acct WHERE uuid = '#{uuid}')"
@@ -136,7 +134,7 @@ class Dao
   # @param header the column names
   # @return the execution result of the query
   def do_query(sql, header)
-    instance = @client.open
+    instance = Client.open
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 
@@ -155,7 +153,7 @@ class Dao
   # @param sql the sql statement
   # @return the execution result of the query
   def do_update(sql)
-    instance = @client.open
+    instance = Client.open
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 

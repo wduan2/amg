@@ -13,7 +13,6 @@ def print(result)
 end
 
 begin
-  crud = Crud.new
   cmds = []
 
   while ARGV.any?
@@ -29,37 +28,39 @@ begin
             -d,--delete label -- delete account
             -u,--username label new_username -- update username
             -p,--password label new_password -- update password
-            -r,--relabel label new_label -- update label'
+            -r,--relabel label new_label -- update label
+            -b,--backup -- backup db'
+
     when '-l' || '--list'
-      cmds << proc { print(crud.list_all) }
+      cmds << proc { print(Crud.list_all) }
     when '-f' || '--find'
       label = ARGV.shift
-      cmds << proc { print(crud.find_acct(label)) } if Validator.test(label)
+      cmds << proc { print(Crud.find_acct(label)) } if Validator.test(label)
     when '-a' || '--add'
       acct_info = ARGV.shift(3)
-      cmds << proc { crud.add_new(acct_info[0], acct_info[1], acct_info[2]) } if Validator.test(acct_info)
+      cmds << proc { Crud.add_new(acct_info[0], acct_info[1], acct_info[2]) } if Validator.test(acct_info)
     when '-q' || '--question'
       acct_info = ARGV.shift(3)
-      cmds << proc { crud.add_new_question(acct_info[0], acct_info[1], acct_info[2]) } if Validator.test(acct_info)
+      cmds << proc { Crud.add_new_question(acct_info[0], acct_info[1], acct_info[2]) } if Validator.test(acct_info)
     when '-d' || '--delete'
       label = ARGV.shift
-      cmds << proc { crud.delete(label) } if Validator.test(label)
+      cmds << proc { Crud.delete(label) } if Validator.test(label)
     when '-u' || '--username'
       acct_info = ARGV.shift(2)
-      cmds << proc { crud.update_username(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
+      cmds << proc { Crud.update_username(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
     when '-p' || '--password'
       acct_info = ARGV.shift(2)
-      cmds << proc { crud.update_password(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
+      cmds << proc { Crud.update_password(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
     when '-r' || '--relabel'
       acct_info = ARGV.shift(2)
-      cmds << proc { crud.relabel(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
+      cmds << proc { Crud.relabel(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
     else
       ARGV.shift
     end
 
     cmds.each(&:call)
   end
-rescue StandardError => e
+rescue => e
   # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
-  Logger.error("Error: #{e}")
+  Logger.error("Error: #{e}\nBacktrace: #{e.backtrace}")
 end

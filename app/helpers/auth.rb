@@ -1,5 +1,8 @@
-class Auth
-  def self.get_user
+module Auth
+
+  module_function
+
+  def get_user
     return ENV['USER']
   end
 end

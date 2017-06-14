@@ -1,9 +1,10 @@
 require 'colorize'
 require_relative 'logger'
 
-class Validator
+module Validator
+
   # Check if the argument is nil or empty.
-  def self.test(args)
+  def test(args)
     invalid = args.nil?
 
     unless invalid
@@ -26,4 +27,6 @@ class Validator
 
     return !invalid
   end
+
+  module_function :test
 end
