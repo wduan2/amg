@@ -1,10 +1,12 @@
-class Formatter
+module Formatter
+
+  module_function
 
   # Format the result.
   #
   # @param result the sql query result
   # @return the result with formatted date
-  def self.format(result)
+  def format(result)
     if result
       result.each do |row|
         row.keys.each do |key|
@@ -15,11 +17,13 @@ class Formatter
     end
   end
 
+  private_class_method
+
   # Format the date.
   #
   # @param hash the sql query result
   # @param key the key
-  def self.format_date(hash, key)
+  def format_date(hash, key)
     if hash[key].is_a? Date
       hash[key] = hash[key].strftime('%Y-%m-%d')
     end
@@ -29,11 +33,9 @@ class Formatter
   #
   # @param hash the sql query result
   # @param key the key
-  def self.format_nil(hash, key)
+  def format_nil(hash, key)
     if hash[key].nil?
       hash[key] = 'N/A'
     end
   end
-
-  private_class_method :format_date, :format_nil
 end

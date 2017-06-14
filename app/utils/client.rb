@@ -1,5 +1,5 @@
 require 'sqlite3'
-require_relative 'logger'
+require_relative 'log'
 require_relative 'validator'
 
 module Client
@@ -16,7 +16,7 @@ module Client
   #
   # @return the initialized sqlite client
   def open
-    Logger.debug("Initializing SQLite database: #{DB_FILE}.")
+    Log.debug("Initializing SQLite database: #{DB_FILE}.")
 
     # Must create a new instance each time
     @client = SQLite3::Database.new(DB_FILE)
@@ -28,6 +28,6 @@ module Client
   # Close the database connection.
   def close
     @client.close unless @client.nil? && @client.closed?
-    Logger.debug("Closing SQLite database: #{DB_FILE}.")
+    Log.debug("Closing SQLite database: #{DB_FILE}.")
   end
 end

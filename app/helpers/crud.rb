@@ -17,7 +17,7 @@ module Crud
                             VALUES ('#{uuid}', '#{username}', '#{password}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '#{Auth.get_user}');")
     Dao.do_update("INSERT INTO #{Dao::REQUIRED_TABLES[:acct_desc]} (label, date_updated, date_created, acct_id)
                             VALUES ('#{label}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
-    Logger.info("New account: #{label}, username: #{username} added")
+    Log.info("New account: #{label}, username: #{username} added")
   end
 
   # Add new security question and answer.
@@ -29,7 +29,7 @@ module Crud
     id = Dao.find_acct_id(label, nil)
     Dao.do_update("INSERT INTO #{Dao::REQUIRED_TABLES[:security_question]} (question, answer, date_created, date_updated, acct_id)
                             VALUES ('#{question}', '#{answer}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, #{id});")
-    Logger.info("New security question added for account with label: #{label}")
+    Log.info("New security question added for account with label: #{label}")
   end
 
   # Update username of the account.
@@ -62,7 +62,7 @@ module Crud
   def delete(label)
     uuid, found_label = Dao.find_uuid(label, nil)
     Dao.do_update("DELETE FROM acct WHERE uuid = '#{uuid}';")
-    Logger.info("Account with label: #{found_label} deleted")
+    Log.info("Account with label: #{found_label} deleted")
   end
 
   # List all accounts.

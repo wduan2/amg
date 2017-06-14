@@ -1,7 +1,9 @@
 require 'colorize'
-require_relative 'logger'
+require_relative 'log'
 
 module Validator
+
+  module_function
 
   # Check if the argument is nil or empty.
   def test(args)
@@ -23,10 +25,8 @@ module Validator
       end
     end
 
-    Logger.info('Argument must not be nil or empty!') if invalid
+    Log.error('Argument must not be nil or empty!') if invalid
 
     return !invalid
   end
-
-  module_function :test
 end

@@ -30,8 +30,4 @@ am -f label
 
 Dependencies:
 
-ap
-
-colorize
-
 sqlite3

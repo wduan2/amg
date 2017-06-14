@@ -1,15 +1,22 @@
 #!/usr/bin/ruby
 
-require 'ap'
-require_relative 'utils/logger'
+require_relative 'utils/log'
 require_relative 'utils/validator'
 require_relative 'helpers/crud'
 require_relative 'helpers/auth'
 
 def print(result)
-  ap result if result.any?
+  if result.any?
+    result.each do |acct|
+      detail = ''
+      acct.each do |k, v|
+        detail += "  #{Log.g(k)}: #{Log.y(v.to_s)}\n"
+      end
+      Log.log("#{detail}\n ------------------")
+    end
+  end
 
-  Logger.info("Total return accounts: #{result.length}")
+  Log.info("Total return accounts: #{result.length}")
 end
 
 begin
@@ -18,7 +25,7 @@ begin
   while ARGV.any?
     case ARGV.shift
     when '--debug'
-      Logger.enable_debug
+      Log.enable_debug
     when '-h' || '--help'
       puts '-h,--help -- show help info
             -l,--list -- list all
@@ -28,9 +35,7 @@ begin
             -d,--delete label -- delete account
             -u,--username label new_username -- update username
             -p,--password label new_password -- update password
-            -r,--relabel label new_label -- update label
-            -b,--backup -- backup db'
-
+            -r,--relabel label new_label -- update label'
     when '-l' || '--list'
       cmds << proc { print(Crud.list_all) }
     when '-f' || '--find'
@@ -62,5 +67,5 @@ begin
   end
 rescue => e
   # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
-  Logger.error("Error: #{e}\nBacktrace: #{e.backtrace}")
+  Log.error("Error: #{e}\nBacktrace: #{e.backtrace}")
 end

@@ -1,6 +1,6 @@
 require 'securerandom'
 require_relative 'client'
-require_relative 'logger'
+require_relative 'log'
 require_relative 'formatter'
 require_relative '../helpers/auth'
 
@@ -68,12 +68,12 @@ module Dao
 
     return results if results.any?
 
-    Logger.info("No account found with label: #{label}, attempt to fuzzy find...")
+    Log.info("No account found with label: #{label}, attempt to fuzzy find...")
     fuzzy_results = exact_find("%#{label}%")
 
     return fuzzy_results if fuzzy_results.length <= 1
 
-    Logger.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
+    Log.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
 
     decision = gets.chomp
     return fuzzy_results[0..0] if decision =~ /^[nN]/
@@ -88,18 +88,18 @@ module Dao
     result = find_acct(label)
 
     if result.length > 1
-      Logger.info("More than one matched account with label : #{label} found:")
+      Log.info("More than one matched account with label : #{label} found:")
 
       pos = 0
       result.each do |acct|
-        Logger.info("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
+        Log.info("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
         pos += 1
       end
 
       prompt = 'Choose one account'
       prompt += "to update #{field}" unless field.nil?
 
-      Logger.info(prompt + ':')
+      Log.info(prompt + ':')
       select = gets.to_i
       return result[select]
     end
@@ -117,7 +117,7 @@ module Dao
     uuid, found_label = find_uuid(label, field)
 
     if uuid.nil?
-      Logger.info("Account #{label} not found!")
+      Log.info("Account #{label} not found!")
       return
     end
 
@@ -125,7 +125,7 @@ module Dao
 
     do_update("UPDATE #{table} SET #{field} = '#{new_val}', date_updated = CURRENT_TIMESTAMP WHERE #{find_acct_query};")
 
-    Logger.info("Update #{field} to #{new_val} for account #{found_label}")
+    Log.info("Update #{field} to #{new_val} for account #{found_label}")
   end
 
   # Execute sql statement.
@@ -138,7 +138,7 @@ module Dao
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 
-    Logger.debug("Executing query sql: '#{sql}'")
+    Log.debug("Executing query sql: '#{sql}'")
     result = instance.execute(sql)
 
     instance.close
@@ -157,7 +157,7 @@ module Dao
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 
-    Logger.debug("Executing update sql: '#{sql}'")
+    Log.debug("Executing update sql: '#{sql}'")
     result = instance.execute(sql)
 
     instance.close
@@ -171,7 +171,7 @@ module Dao
   # @param result the query results
   def mapping(header, result)
 
-    Logger.warn("Header length = #{header.length} not equal to entry length = #{result[0].length}, some fields will missing!") if header.length != result[0].length
+    Log.warn("Header length = #{header.length} not equal to entry length = #{result[0].length}, some fields will missing!") if header.length != result[0].length
 
     result_with_header = []
 
