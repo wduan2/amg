@@ -4,8 +4,8 @@ require_relative 'validator'
 
 module Client
 
-  DB_FILE = "#{Dir.pwd}/app/data/am.db".freeze
-  DB_INIT_SQL = File.read("#{Dir.pwd}/app/sql/create_sqlite.sql").to_s.freeze
+  DB_FILE = "#{File.expand_path('..', __dir__)}/data/am.db".freeze
+  DB_INIT_SQL = File.read("#{File.expand_path('..', __dir__)}/sql/create_sqlite.sql").to_s.freeze
 
   # Singleton sqlite client instance.
   @client = nil
