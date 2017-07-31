@@ -7,6 +7,6 @@ echo "#!/usr/bin/env bash" > am
 echo "Detected current working directory: $AM_PATH"
 echo "ruby $AM_PATH \$@" >> am
 
-mv amt /usr/local/bin/
+mv am /usr/local/bin/
 
 chmod +x /usr/local/bin/am
