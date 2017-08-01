@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-shelldir=$(dirname $0)
+shelldir=$(cd $(dirname $0) && pwd)
+
 backup="$HOME/.acct"
 
 [ ! -d $backup ] && mkdir $backup
