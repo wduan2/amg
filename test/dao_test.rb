@@ -1,7 +1,7 @@
 require 'test/unit'
-require_relative '../app/utils/dao'
+require_relative '../lib/db/dao'
 
-class SqliteDbUtilTest < Test::Unit::TestCase
+class DaoTest < Test::Unit::TestCase
 
   def test_mapping
     result = [%w[am1 myAccount myPwd], %w[am2 anotherAccount noClue]]
@@ -9,7 +9,7 @@ class SqliteDbUtilTest < Test::Unit::TestCase
     expect = [{ 'user_name' => 'am1', 'label' => 'myAccount', 'pwd' => 'myPwd' },
               { 'user_name' => 'am2', 'label' => 'anotherAccount', 'pwd' => 'noClue' }]
 
-    actual = Dao.new.mapping(header, result)
+    actual = Dao.mapping(header, result)
 
     assert_empty(expect - actual)
   end

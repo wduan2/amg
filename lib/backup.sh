@@ -8,4 +8,4 @@ backup="$HOME/.acct"
 
 today=$(date +%Y-%m-%d)
 
-cp "$shelldir/data/am.db" "$backup/am-$today.db"
+cp "$shelldir/db/am.db" "$backup/am-$today.db"

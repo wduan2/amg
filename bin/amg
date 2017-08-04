@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'amg'
+
+Amg.new.start

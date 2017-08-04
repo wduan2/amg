@@ -1,8 +1,7 @@
 require 'securerandom'
 require_relative 'client'
-require_relative 'log'
-require_relative 'formatter'
-require_relative '../helpers/auth'
+require_relative '../../lib/helper/log'
+require_relative '../../lib/helper/formatter'
 
 module Dao
 
@@ -32,7 +31,7 @@ module Dao
               sq.question, sq.answer,
               a.uuid, a.sys_user FROM
               acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id
-              WHERE ad.label like '#{label}' AND a.sys_user = '#{Auth.get_user}'
+              WHERE ad.label like '#{label}' AND a.sys_user = '#{ENV['USER']}'
               ORDER BY ad.date_updated;",
              %w[label id username password date_created date_updated description link question answer uuid sys_user])
   end
@@ -56,7 +55,7 @@ module Dao
   def find_acct_id(label, field)
     account = find_and_choose(label, field)
 
-    return account['id'] unless account.nil?
+    account['id'] unless account.nil?
   end
 
   # Look up account detail by a given label, if no account found attempt to fuzzy search.
@@ -76,7 +75,7 @@ module Dao
     Log.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
 
     decision = gets.chomp
-    return fuzzy_results[0..0] if decision =~ /^[nN]/
+    fuzzy_results[0..0] if decision =~ /^[nN]/
   end
 
   # Look up accounts by a given label, if multiple accounts found, let the user pick one.
@@ -104,7 +103,7 @@ module Dao
       return result[select]
     end
 
-    return result[0]
+    result.first
   end
 
   # Update field with new value in table.
@@ -145,7 +144,7 @@ module Dao
 
     return [] if result.nil? || result.empty?
 
-    return Formatter.format(mapping(header, result))
+    Formatter.format(mapping(header, result))
   end
 
   # Execute sql statement.
@@ -162,7 +161,7 @@ module Dao
 
     instance.close
 
-    return result
+    result
   end
 
   # [ user_name, label, pwd ] + [ am, acct, hint ] => [ user_name: am, label: acct, pwd: hint ]
@@ -186,6 +185,6 @@ module Dao
       result_with_header.push(entry)
     end
 
-    return result_with_header
+    result_with_header
   end
 end

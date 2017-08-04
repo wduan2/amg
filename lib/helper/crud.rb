@@ -1,6 +1,5 @@
 require 'securerandom'
-require_relative '../utils/dao'
-require_relative '../helpers/auth'
+require_relative '../db/dao'
 
 module Crud
 
@@ -14,7 +13,7 @@ module Crud
   def add_new(label, username, password)
     uuid = SecureRandom.hex(12)
     Dao.do_update("INSERT INTO #{Dao::REQUIRED_TABLES[:acct]} (uuid, username, password, date_updated, date_created, sys_user)
-                            VALUES ('#{uuid}', '#{username}', '#{password}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '#{Auth.get_user}');")
+                            VALUES ('#{uuid}', '#{username}', '#{password}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '#{ENV['USER']}');")
     Dao.do_update("INSERT INTO #{Dao::REQUIRED_TABLES[:acct_desc]} (label, date_updated, date_created, acct_id)
                             VALUES ('#{label}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM acct WHERE uuid = '#{uuid}'));")
     Log.info("New account: #{label}, username: #{username} added")

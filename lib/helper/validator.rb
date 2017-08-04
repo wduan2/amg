@@ -27,6 +27,6 @@ module Validator
 
     Log.error('Argument must not be nil or empty!') if invalid
 
-    return !invalid
+    !invalid
   end
 end
