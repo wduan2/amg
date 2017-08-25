@@ -1,6 +1,3 @@
-**Requirements:**
-
-Install SQLite engine: https://www.sqlite.org/download.html
 
 ```
 gem build am.gemspec
@@ -10,7 +7,8 @@ gem build am.gemspec
 gem install amg-1.0.0.gem
 ```
 
-Show help information
+
+Help info:
 ```
 amg -h
 ```
