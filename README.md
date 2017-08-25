@@ -1,6 +1,6 @@
 
 ```
-gem build am.gemspec
+gem build amg.gemspec
 ```
 
 ```
