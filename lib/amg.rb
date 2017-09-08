@@ -1,40 +1,42 @@
 require_relative 'helper/log'
 require_relative 'helper/validator'
 require_relative 'helper/crud'
+require 'fileutils'
 
-class Amg
-  def print(result)
-    if result.any?
-      result.each do |acct|
-        detail = ''
-        acct.each do |k, v|
-          detail += "  #{Log.g(k)}: #{Log.y(v.to_s)}\n"
+module Amg
+  class Cli
+    def print(result)
+      if result.any?
+        result.each do |acct|
+          detail = ''
+          acct.each do |k, v|
+            detail += "  #{Log.g(k)}: #{Log.y(v.to_s)}\n"
+          end
+          Log.log("#{detail}\n ------------------")
         end
-        Log.log("#{detail}\n ------------------")
       end
+
+      Log.info("Total return accounts: #{result.length}")
     end
 
-    Log.info("Total return accounts: #{result.length}")
-  end
+    def start
+      begin
+        cmds = []
 
-  def start
-    begin
-      cmds = []
-
-      while ARGV.any?
-        case ARGV.shift
+        while ARGV.any?
+          case ARGV.shift
           when '--debug'
             Log.enable_debug
           when '-h' || '--help'
-            puts '-h,--help -- show help info
-        -l,--list -- list all
-        -f,--find label -- find account
-        -a,--add label username password -- add new account
-        -q,--question label question answer -- add new security question
-        -d,--delete label -- delete account
-        -u,--username label new_username -- update username
-        -p,--password label new_password -- update password
-        -r,--relabel label new_label -- update label'
+            puts ['-h,--help                           | show help info',
+                  '-l,--list                           | list all',
+                  '-f,--find label                     | find account',
+                  '-a,--add label username password    | add new account',
+                  '-q,--question label question answer | add new security question',
+                  '-d,--delete label                   | delete account',
+                  '-u,--username label new_username    | update username',
+                  '-p,--password label new_password    | update password',
+                  '-r,--relabel label new_label        | update label'].join("\n")
           when '-l' || '--list'
             cmds << proc { print(Crud.list_all) }
           when '-f' || '--find'
@@ -58,18 +60,21 @@ class Amg
           when '-r' || '--relabel'
             acct_info = ARGV.shift(2)
             cmds << proc { Crud.relabel(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
+          when '-b' || '--backup'
+            cmds << proc { FileUtils.copy("#{File.absolute_path(File.dirname(__FILE__))}/db/am.db", "#{ENV['HOME']}/.acct/am-#{Date.today}.db") }
           else
             ARGV.shift
+          end
         end
+
+        cmds.each(&:call)
+
+      rescue => e
+        # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
+        Log.error("Error: #{e}\nBacktrace: #{e.backtrace}")
       end
-
-      cmds.each(&:call)
-
-    rescue => e
-      # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
-      Log.error("Error: #{e}\nBacktrace: #{e.backtrace}")
     end
   end
 end
 
-Amg.new.start
+Amg::Cli.new.start
