@@ -61,7 +61,7 @@ module Amg
             acct_info = ARGV.shift(2)
             cmds << proc { Crud.relabel(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
           when '-b' || '--backup'
-            cmds << proc { FileUtils.copy("#{File.absolute_path(File.dirname(__FILE__))}/db/am.db", "#{ENV['HOME']}/.acct/am-#{Date.today}.db") }
+            cmds << proc { FileUtils.copy("#{ENV['HOME']}/am.db", "#{ENV['HOME']}/.acct/am-#{Date.today}.db") }
           else
             ARGV.shift
           end

@@ -6,7 +6,7 @@ module Client
 
   APP_PATH = File.absolute_path(File.dirname(__FILE__)).freeze
 
-  DB_FILE = "#{APP_PATH}/am.db".freeze
+  DB_FILE = "#{ENV['HOME']}/.acct/am.db".freeze
   DB_INIT_SQL = File.read("#{APP_PATH}/am.sql").to_s.freeze
 
   # Singleton sqlite client instance.
