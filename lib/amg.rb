@@ -2,6 +2,7 @@ require_relative 'helper/log'
 require_relative 'helper/validator'
 require_relative 'helper/crud'
 require 'fileutils'
+require 'time'
 
 module Amg
   class Cli
@@ -61,7 +62,7 @@ module Amg
             acct_info = ARGV.shift(2)
             cmds << proc { Crud.relabel(acct_info[0], acct_info[1]) } if Validator.test(acct_info)
           when '-b' || '--backup'
-            cmds << proc { FileUtils.copy("#{ENV['HOME']}/.acct/am.db", "#{ENV['HOME']}/.acct/am-#{Date.today}.db") }
+            cmds << proc { backup }
           else
             ARGV.shift
           end
@@ -73,6 +74,19 @@ module Amg
         # Cannot catch 'Exception' since system exit is one kind of 'Exception' in ruby
         Log.error("Error: #{e}\nBacktrace: #{e.backtrace}")
       end
+    end
+
+    def backup
+      backup_path = "#{ENV['HOME']}/.acct/backup"
+      FileUtils.mkdir_p(backup_path) unless File.directory?(backup_path)
+
+      Dir["#{backup_path}/*"].each do |backup|
+        if File.ctime(backup).utc + (7 * 24 * 60 * 60) < Time.now.utc
+          FileUtils.remove(backup)
+        end
+      end
+
+      FileUtils.copy("#{ENV['HOME']}/.acct/am.db", "#{ENV['HOME']}/.acct/backup/am-#{Date.today}.db")
     end
   end
 end
