@@ -4,8 +4,8 @@ require_relative '../../lib/helper/log'
 require_relative '../../lib/helper/formatter'
 
 module Dao
-
-  include Log, Formatter
+  include Log
+  include Formatter
 
   REQUIRED_TABLES = { acct: 'acct',
                       acct_desc: 'acct_desc',

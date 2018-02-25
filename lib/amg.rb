@@ -6,7 +6,9 @@ require 'time'
 
 module Amg
   class Cli
-    include Validator, Log, Crud
+    include Validator
+    include Log
+    include Crud
 
     def print(result)
       if result.any?
@@ -54,7 +56,7 @@ module Amg
           when '-d' || '--delete'
             label = next?(ARGV, 'invalid label, usage: -d,--delete label')
             cmds << proc { delete(label) }
-          when '-di' 
+          when '-di'
             uuid = next?(ARGV, 'invalid uuid, usage -di uuid')
             cmds << proc { delete_by_uuid(uuid) }
           when '-u' || '--username'

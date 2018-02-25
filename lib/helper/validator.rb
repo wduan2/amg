@@ -1,5 +1,5 @@
 module Validator
-  
+
   def next_i?(args, err)
     next_arg = args.shift
     return next_arg if next_arg && next_arg =~ /\A\d+\z/

@@ -2,7 +2,8 @@ require 'securerandom'
 require_relative '../db/dao'
 
 module Crud
-  include Dao, Log
+  include Dao
+  include Log
 
   module_function
 
