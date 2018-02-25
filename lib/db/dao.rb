@@ -5,6 +5,8 @@ require_relative '../../lib/helper/formatter'
 
 module Dao
 
+  include Log, Formatter
+
   REQUIRED_TABLES = { acct: 'acct',
                       acct_desc: 'acct_desc',
                       security_question: 'security_question',
@@ -16,9 +18,9 @@ module Dao
   #
   # @return all accounts
   def list_all
-    do_query('SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, ad.link
-                  FROM acct a JOIN acct_desc ad on ad.acct_id = a.id ORDER BY a.date_updated;',
-             %w[label id username password date_created date_updated link])
+    do_query('SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, ad.link, a.uuid 
+              FROM acct a JOIN acct_desc ad ON ad.acct_id = a.id ORDER BY a.date_updated;',
+             %w[label id username password date_created date_updated link uuid])
   end
 
   # Look up account detail by a given label.
@@ -26,11 +28,9 @@ module Dao
   # @param label the label of the account
   # @return the matched account
   def exact_find(label)
-    do_query("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated,
-              ad.description, ad.link,
-              sq.question, sq.answer,
-              a.uuid, a.sys_user FROM
-              acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id
+    do_query("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, ad.description, ad.link,
+              sq.question, sq.answer, a.uuid, a.sys_user 
+              FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id
               WHERE ad.label like '#{label}' AND a.sys_user = '#{ENV['USER']}'
               ORDER BY ad.date_updated;",
              %w[label id username password date_created date_updated description link question answer uuid sys_user])
@@ -67,15 +67,16 @@ module Dao
 
     return results if results.any?
 
-    Log.info("No account found with label: #{label}, attempt to fuzzy find...")
+    info("No account found with label: #{label}, attempt to fuzzy find...")
     fuzzy_results = exact_find("%#{label}%")
 
     return fuzzy_results if fuzzy_results.length <= 1
 
-    Log.info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
+    info("Found similar account with label: #{fuzzy_results[0]['label']}, list all similar results ? (Y/N)")
 
     decision = gets.chomp
-    fuzzy_results[0..0] if decision =~ /^[nN]/
+    return fuzzy_results[0..0] if decision =~ /^[nN]/
+    fuzzy_results
   end
 
   # Look up accounts by a given label, if multiple accounts found, let the user pick one.
@@ -87,18 +88,18 @@ module Dao
     result = find_acct(label)
 
     if result.length > 1
-      Log.info("More than one matched account with label : #{label} found:")
+      info("More than one matched account with label : #{label} found:")
 
       pos = 0
       result.each do |acct|
-        Log.info("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
+        info("#{pos}: UUID: #{acct['uuid']} Label: #{acct['label']} Link: #{acct['link']} Description: #{acct['description']} ")
         pos += 1
       end
 
       prompt = 'Choose one account'
       prompt += "to update #{field}" unless field.nil?
 
-      Log.info(prompt + ':')
+      info(prompt + ':')
       select = gets.to_i
       return result[select]
     end
@@ -116,7 +117,7 @@ module Dao
     uuid, found_label = find_uuid(label, field)
 
     if uuid.nil?
-      Log.info("Account #{label} not found!")
+      info("Account #{label} not found!")
       return
     end
 
@@ -124,7 +125,7 @@ module Dao
 
     do_update("UPDATE #{table} SET #{field} = '#{new_val}', date_updated = CURRENT_TIMESTAMP WHERE #{find_acct_query};")
 
-    Log.info("Update #{field} to #{new_val} for account #{found_label}")
+    info("Update #{field} to #{new_val} for account #{found_label}")
   end
 
   # Execute sql statement.
@@ -137,14 +138,14 @@ module Dao
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 
-    Log.debug("Executing query sql: '#{sql}'")
+    debug("Executing query sql: '#{sql}'")
     result = instance.execute(sql)
 
     instance.close
 
     return [] if result.nil? || result.empty?
 
-    Formatter.format(mapping(header, result))
+    format(mapping(header, result))
   end
 
   # Execute sql statement.
@@ -156,7 +157,7 @@ module Dao
 
     raise StandardError, 'Issue creating SQLite connection' if instance.nil?
 
-    Log.debug("Executing update sql: '#{sql}'")
+    debug("Executing update sql: '#{sql}'")
     result = instance.execute(sql)
 
     instance.close
@@ -170,7 +171,7 @@ module Dao
   # @param result the query results
   def mapping(header, result)
 
-    Log.warn("Header length = #{header.length} not equal to entry length = #{result[0].length}, some fields will missing!") if header.length != result[0].length
+    warn("Header length = #{header.length} not equal to entry length = #{result[0].length}, some fields will missing!") if header.length != result[0].length
 
     result_with_header = []
 
