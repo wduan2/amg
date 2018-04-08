@@ -88,8 +88,9 @@ module Amg
       backup_path = "#{ENV['HOME']}/.acct/backup"
       FileUtils.mkdir_p(backup_path) unless File.directory?(backup_path)
 
-      Dir["#{backup_path}/*"].each do |backup|
-        if File.ctime(backup).utc + (7 * 24 * 60 * 60) < Time.now.utc
+      backups = Dir["#{backup_path}/*"]
+      backups.each do |backup|
+        if backups.size < 4 && File.ctime(backup).utc + (7 * 24 * 60 * 60) < Time.now.utc
           FileUtils.remove(backup)
         end
       end
