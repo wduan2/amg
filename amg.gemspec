@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors       = ['Wenyu Duan']
   s.email         = 'duanwenyu1988@gmail.com'
   s.files         = Dir['lib/**/*']
-  s.homepage      = 'https://github.com/duandf35/AcctManagerCLI'
+  s.homepage      = 'https://github.com/wduan2/AcctManagerCLI'
   s.require_paths = ['lib']
   s.executables   = ['amg']
   s.license       = 'MIT'
