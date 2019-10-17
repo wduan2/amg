@@ -90,7 +90,7 @@ module Amg
 
       backups = Dir["#{backup_path}/*"]
       backups.each do |backup|
-        if backups.size < 4 && File.ctime(backup).utc + (7 * 24 * 60 * 60) < Time.now.utc
+        if backups.size > 4 && File.ctime(backup).utc + (7 * 24 * 60 * 60) < Time.now.utc
           FileUtils.remove(backup)
         end
       end
