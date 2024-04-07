@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   s.executables   = ['amg']
   s.license       = 'MIT'
 
-  s.add_development_dependency 'sqlite3', '1.3.11', '>=1.3.0'
+  s.add_development_dependency 'sqlite3', '1.7.3', '>=1.7.3'
 end
