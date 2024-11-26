@@ -31,7 +31,7 @@ module Dao
     do_query("SELECT ad.label, a.id, a.username, a.password, a.date_created, a.date_updated, ad.description, ad.link,
               sq.question, sq.answer, a.uuid, a.sys_user 
               FROM acct_desc ad JOIN acct a ON a.id = ad.acct_id LEFT JOIN security_question sq ON a.id = sq.acct_id
-              WHERE ad.label like '#{label}' AND a.sys_user = '#{ENV['USER']}'
+              WHERE ad.label like '#{label}'
               ORDER BY ad.date_updated;",
              %w[label id username password date_created date_updated description link question answer uuid sys_user])
   end
